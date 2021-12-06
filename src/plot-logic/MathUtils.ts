@@ -1,4 +1,4 @@
-export default class DrawUtils {
+export default class MathUtils {
     identityMatrix(): number[] {
         return [
             1, 0, 0,

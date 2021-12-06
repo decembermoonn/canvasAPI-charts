@@ -25,5 +25,5 @@ window.onload = function () {
 ```
 
 <i>Project follows semantic versioning and conventional commits.
-Branch are split in master and production.
-Changes are made on production and merged into master.</i>
+Branch are split in master and development.
+Changes are made on development and may be merged into master.</i>

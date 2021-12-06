@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-undef
 module.exports = {
-    entry: './src/classes/Chart.ts',
+    entry: './src/components/ChartServant.ts',
     experiments: {
         outputModule: true,
     },
