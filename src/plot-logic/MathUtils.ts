@@ -6,6 +6,9 @@ export default class MathUtils {
             0, 0, 1,
         ];
     }
+    // Rysowanie od górnego lewego rogu.
+    // Chcąc rysować standardowo (od lewego dolnego)
+    // zmienić na 2/height oraz -1
     projectionMatrix(width: number, height: number): number[] {
         return [
             2 / width, 0, 0,

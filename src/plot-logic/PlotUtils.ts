@@ -1,17 +1,13 @@
-import vertexShaderString from '../shaders/vertexShader.glsl';
-import fragmentShaderString from '../shaders/fragmentShader.glsl';
 import MathUtils from './MathUtils';
 
-export function createProgramFromScripts(gl: WebGLRenderingContext) {
-    const vertexShaderSource = vertexShaderString;
-    const fragmentShaderSource = fragmentShaderString;
-    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+export function createProgramFromScripts(gl: WebGLRenderingContext, vs: string, fs: string): WebGLProgram {
+    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vs);
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fs);
     const program = createProgram(gl, vertexShader, fragmentShader);
     return program;
 }
 
-export function prepareView(gl: WebGLRenderingContext) {
+export function prepareView(gl: WebGLRenderingContext): void {
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);

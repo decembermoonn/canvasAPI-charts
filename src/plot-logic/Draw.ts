@@ -1,8 +1,45 @@
 import { createProgramFromScripts, getTransformationMatrix, prepareView } from "./PlotUtils";
+import vertexShaderString from '../shaders/vertexShader.glsl';
+import fragmentShaderString from '../shaders/fragmentShader.glsl';
+import exampleTwoRectanglesVShaderString from '../shaders/exampleTwoRectangles/vertexShader.glsl';
+import exampleTwoRectanglesFShaderString from '../shaders/exampleTwoRectangles/fragmentShader.glsl';
 
 export default class Draw {
+    drawRect(gl: WebGLRenderingContext): void {
+        // INIT
+        const program = createProgramFromScripts(gl, exampleTwoRectanglesVShaderString, exampleTwoRectanglesFShaderString);
+
+        const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+        const colorUniformLocation = gl.getUniformLocation(program, 'u_color');
+        const matrixUniformLocation = gl.getUniformLocation(program, 'u_matrix');
+        const matrix = getTransformationMatrix(gl);
+
+        const dataBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, dataBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Int16Array([0, 0, 0, 50, 50, 50, 0, 0, 50, 0, 50, 50]), gl.STATIC_DRAW);
+
+        // RENDER
+        prepareView(gl);
+        gl.useProgram(program);
+        gl.uniformMatrix3fv(matrixUniformLocation, false, matrix);
+
+        // RENDER -> DRAW 1
+        gl.enableVertexAttribArray(positionAttributeLocation);
+        gl.uniform4f(colorUniformLocation, 0.5, 0.5, 0.5, 1);
+        gl.bindBuffer(gl.ARRAY_BUFFER, dataBuffer);
+        gl.vertexAttribPointer(positionAttributeLocation, 2, gl.SHORT, false, 0, 0);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+        // REDNER -> DRAW 2
+        gl.enableVertexAttribArray(positionAttributeLocation);
+        gl.uniform4f(colorUniformLocation, 0.1, 0.5, 0.9, 1);
+        gl.bindBuffer(gl.ARRAY_BUFFER, dataBuffer);
+        gl.vertexAttribPointer(positionAttributeLocation, 2, gl.SHORT, false, 0, 6 * Int16Array.BYTES_PER_ELEMENT);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+
     drawF(gl: WebGLRenderingContext): void {
-        const program = createProgramFromScripts(gl);
+        const program = createProgramFromScripts(gl, vertexShaderString, fragmentShaderString);
         gl.useProgram(program);
 
         const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');

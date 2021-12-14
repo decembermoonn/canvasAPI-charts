@@ -1,19 +1,21 @@
 {
-    "env": {
-        "browser": true,
-        "es6": true
-    },
+    "plugins": [
+        "@typescript-eslint"
+    ],
     "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended"
     ],
+    "rules": {
+        "@typescript-eslint/explicit-function-return-type": "error"
+    },
+    "env": {
+        "browser": true,
+        "es6": true
+    },
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 11,
         "sourceType": "module"
-    },
-    "plugins": [
-        "@typescript-eslint"
-    ],
-    "rules": {}
+    }
 }

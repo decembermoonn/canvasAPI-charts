@@ -6,3 +6,6 @@ export interface Color {
 }
 
 export type ContextSource = string | HTMLCanvasElement | WebGLRenderingContext;
+
+
+export type ResizeObserverEntryUpdated = ResizeObserverEntry & { devicePixelContentBoxSize?: ResizeObserverSize[] }

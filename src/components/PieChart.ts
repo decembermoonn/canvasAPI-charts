@@ -44,7 +44,7 @@ export class PieChart extends Chart {
         }
     }
 
-    private fillWithExampleData() {
+    private fillWithExampleData(): void {
         this.data = Array(5).map((e, i) => ({
             key: `element${i}`,
             value: Math.floor(Math.random() * 10),
@@ -79,7 +79,7 @@ export class PieChart extends Chart {
         this.data.forEach((entry, index) => entry.color = colors[index]);
     }
 
-    public setSerieColor(serie: string, color: Color) {
+    public setSerieColor(serie: string, color: Color): void {
         const entry = this.data.find(entry => entry.key === serie);
         if (entry == undefined) throw new Error(`Serie with name ${serie} doesnt exist.`);
         entry.color = color;
