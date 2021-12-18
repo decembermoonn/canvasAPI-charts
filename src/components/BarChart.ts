@@ -1,26 +1,12 @@
-import { Color, ContextSource } from "../models";
+import { MultiSerieData, ChartOptions, ContextSource, SerieOptions } from "../models";
 import Draw from "../plot-logic/Draw";
 import { Chart } from "./Chart";
-
-interface ChartOptions {
-    title: string;
-    showTitle: boolean;
-    showLegend: boolean;
-}
-
-interface SerieOptions {
-    serieName: string;
-    color: Color;
-    showLables: boolean;
-    edgeThickness: number;
-    showOnLegend: boolean
-}
+import ChartUtils from "./ChartUtils";
 
 export class BarChart extends Chart {
     optionsForChart: ChartOptions;
-    optionsForSeries: SerieOptions[];
-    labels: string[];
-    values: number[][];
+    seriesData: MultiSerieData[];
+    dataLabels: string[];
 
     constructor(source: ContextSource) {
         super(source);
@@ -29,97 +15,59 @@ export class BarChart extends Chart {
             showTitle: true,
             showLegend: false,
         };
-        this.optionsForSeries = [];
+        this.seriesData = [];
     }
 
     public set X(labels: string[]) {
-        this.labels = labels;
+        this.dataLabels = labels;
     }
 
     public set Y(series: number[][]) {
-        const { length } = this.labels;
+        const { length } = this.dataLabels;
         if (!length)
             throw Error('Values on "X" axis must be specified before setting "Y" values.');
-        const mappedSeries = series.map(serie => this.sliceOrFill(serie, length));
-        this.values = mappedSeries;
-        let i = 1;
-        this.optionsForSeries = this.values.map(() => this.getDefaultSerieObject(i++));
+        const mappedSeries = series.map(serie => ChartUtils.sliceOrFill(serie, length));
+        this.seriesData = mappedSeries.map((serie, index) => this.getDefaultSerieObject(serie, index));
     }
 
-    public set options(options: Partial<ChartOptions>) {
-        const keys = Object.keys(this.optionsForChart);
-        Object.entries(options).forEach(pair => {
-            const key = pair[0];
-            if (keys.includes(key)) {
-                const value = pair[1];
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment 
-                // @ts-ignore: No index signature with a parameter of type 'string' was found on type 'ChartOptions'
-                this.optionsForChart[key] = value;
-            }
-        });
-    }
-
-    private getDefaultSerieObject(id: number): SerieOptions {
+    private getDefaultSerieObject(serie: number[], index: number): MultiSerieData {
         return {
-            serieName: `serie${id}`,
-            color: {
-                r: Math.floor(Math.random() * 255),
-                g: Math.floor(Math.random() * 255),
-                b: Math.floor(Math.random() * 255),
-                a: 255
-            },
-            showLables: false,
-            showOnLegend: false,
-            edgeThickness: 0,
+            values: serie,
+            name: `serie${index}`,
+            options: {
+                color: {
+                    r: Math.floor(Math.random() * 255),
+                    g: Math.floor(Math.random() * 255),
+                    b: Math.floor(Math.random() * 255),
+                    a: 255
+                },
+                showLabels: false,
+                showOnLegend: false,
+                edgeThickness: 0,
+            }
         };
     }
 
-    private updateSerieOptions(oldOptions: SerieOptions, newOptions: Partial<SerieOptions>): void {
-        const keys = Object.keys(oldOptions);
-        Object.entries(newOptions).forEach(pair => {
-            const key = pair[0];
-            if (keys.includes(key)) {
-                const value = pair[1];
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment 
-                // @ts-ignore
-                oldOptions[key] = value;
+    public setChartOptions(options: Partial<ChartOptions>): void {
+        ChartUtils.mergeRight(this.optionsForChart, options);
+    }
+
+    public setSerieOptions(newOptions: Partial<SerieOptions>, whichSeries?: string[]): void {
+        if (whichSeries) whichSeries.forEach((serieName) => {
+            const actualSerie =
+                this.seriesData.find((existingSerie) => existingSerie.name == serieName);
+            if (actualSerie) {
+                ChartUtils.mergeRight(newOptions, actualSerie.options);
+            } else {
+                console.warn(`Serie with name ${serieName} not found.`);
             }
         });
+        else this.seriesData.forEach((serie) => ChartUtils.mergeRight(newOptions, serie.options));
     }
 
-    public setSerieOptions(options: Partial<SerieOptions>, whichSeries?: string[]): void {
-        if (whichSeries && whichSeries.length) {
-            whichSeries.forEach(serieName => {
-                const actualSerieOptions =
-                    this.optionsForSeries.find((existingSerie) => existingSerie.serieName === serieName);
-                if (!actualSerieOptions) {
-                    console.warn(`Serie with name ${serieName} not found.`);
-                    return;
-                }
-                this.updateSerieOptions(actualSerieOptions, options);
-            });
-        } else {
-            this.optionsForSeries.forEach((serie) => this.updateSerieOptions(serie, options));
-        }
-        console.log(this.optionsForSeries);
-    }
-
-    private sliceOrFill(array: number[], len: number, fillWith?: number): number[] {
-        if (array.length === len) return array;
-        if (array.length > len) return array.slice(0, len);
-        if (array.length < len)
-            while (array.length !== len)
-                array.push(fillWith ?? 0);
-        return array;
-    }
-
-    public set configuration(config: unknown) {
-        throw new Error("Method not implemented.");
-    }
     public draw(): void {
-        console.log(this.labels, this.values);
         const draw = new Draw();
-        const c = draw.drawLines(this.context, this.values);
-        draw.drawBars(this.context, this.values, c);
+        const c = draw.drawLines(this.context, this.seriesData[0].values);
+        draw.drawBars(this.context, this.seriesData[0].values, c);
     }
 }

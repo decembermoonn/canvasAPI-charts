@@ -21,15 +21,14 @@ export default class Draw {
         return { tickHeight, tickCount };
     }
 
-    drawLines(gl: WebGLRenderingContext, series: number[][]): number {
+    drawLines(gl: WebGLRenderingContext, series: number[]): number {
         const program = createProgramFromScripts(gl, exampleLinesV, exampleLinesF);
         const positionALoc = gl.getAttribLocation(program, 'a_position');
         const colorULoc = gl.getUniformLocation(program, 'u_color');
         const matrixULoc = gl.getUniformLocation(program, 'u_matrix');
         const matrix = getTransformationMatrix(gl);
 
-        const serie = series[0];
-        const max = Math.max(...serie.map(Math.abs));
+        const max = Math.max(...series.map(Math.abs));
 
         const tickInfo = this.getTickInfo(max, 8);
         const w = gl.canvas.width;
@@ -63,7 +62,7 @@ export default class Draw {
         return tickInfo.tickCount * tickInfo.tickHeight;
     }
 
-    drawBars(gl: WebGLRenderingContext, series: number[][], max: number): void {
+    drawBars(gl: WebGLRenderingContext, series: number[], max: number): void {
         const program = createProgramFromScripts(gl, exampleLinesV, exampleLinesF);
         const positionALoc = gl.getAttribLocation(program, 'a_position');
         const colorULoc = gl.getUniformLocation(program, 'u_color');
@@ -78,11 +77,11 @@ export default class Draw {
         const multipier = H / max;
 
         const colPoints = [];
-        const COL_NUMS = series[0].length;
+        const COL_NUMS = series.length;
         const colAreaWidth = W / COL_NUMS;
 
         for (let i = 0; i < COL_NUMS; i++) {
-            const colHeight = padding + series[0][i] * multipier;
+            const colHeight = padding + series[i] * multipier;
             const pointLeftX = padding + (colAreaWidth * i) + (colAreaWidth / 5);
             const pointLeftY = padding + (colAreaWidth * (i + 1)) - (colAreaWidth / 5);
             colPoints.push(pointLeftX, padding, pointLeftX, colHeight, pointLeftY, colHeight);
