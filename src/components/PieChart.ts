@@ -18,8 +18,6 @@ interface ChartOptions {
 
 export class PieChart extends Chart {
 
-    public deleteMe;
-
     private data: Entry[];
 
     private options: ChartOptions;
@@ -34,7 +32,6 @@ export class PieChart extends Chart {
             legendPlaement: 'bottom'
         }
         this.data = [];
-        this.deleteMe = new Draw();
     }
 
     public draw(): void {

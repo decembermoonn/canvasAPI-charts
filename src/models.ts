@@ -5,7 +5,11 @@ export interface Color {
     a: number,
 }
 
-export type ContextSource = string | HTMLCanvasElement | WebGLRenderingContext;
+export interface TickInfo {
+    tickHeight: number;
+    tickCount: number;
+}
 
+export type ContextSource = string | HTMLCanvasElement | WebGLRenderingContext;
 
 export type ResizeObserverEntryUpdated = ResizeObserverEntry & { devicePixelContentBoxSize?: ResizeObserverSize[] }

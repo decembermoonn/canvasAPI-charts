@@ -6,14 +6,14 @@ export default class MathUtils {
             0, 0, 1,
         ];
     }
-    // Rysowanie od górnego lewego rogu.
-    // Chcąc rysować standardowo (od lewego dolnego)
-    // zmienić na 2/height oraz -1
+    // Rysowanie od dolnego lewego rogu.
+    // Chcąc rysować od górnego lewego,
+    // zmienić na -2/height oraz +1
     projectionMatrix(width: number, height: number): number[] {
         return [
             2 / width, 0, 0,
-            0, -2 / height, 0,
-            -1, 1, 1
+            0, 2 / height, 0,
+            -1, -1, 1
         ];
     }
     translationMatrix(tx: number, ty: number): number[] {

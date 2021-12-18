@@ -26,17 +26,19 @@ export abstract class Chart {
     }
 
     public abstract set X(value: string[] | number[]);
-    public abstract set Y(value: number[]);
-    public abstract set configuration(config: unknown);
+    public abstract set Y(value: number[] | number[][]);
+    // public abstract set configuration(config: unknown);
     public abstract draw(): void;
 
-    // możliwe, że korzystanie z tego RenderAPI nie bedzie w zasadzie potrzebne
+    /*
+        Content under this line will probably be deleted!
+    */
     private initializeCanvas(): void {
         this.resizeObserver = new ResizeObserver((entries: ResizeObserverEntryUpdated[]) => this.onResizeCallback(entries));
         const { canvas } = this.context;
         try {
             this.resizeObserver.observe(canvas, { box: 'device-pixel-content-box' });
-        } catch (e) {
+        } catch (ex) {
             // device-pixel-content-box is not supported so fallback to this
             this.resizeObserver.observe(canvas, { box: 'content-box' });
         }
@@ -46,7 +48,8 @@ export abstract class Chart {
         entries.forEach((entry) => {
             const dpr = entry.devicePixelContentBoxSize ? 1 : window.devicePixelRatio;
             const { inlineSize, blockSize }: ResizeObserverSize = this.getWidthAndHeight(entry);
-            this.setNewCanvasSize(inlineSize, blockSize, dpr);
+            console.log(`Resize to ${inlineSize} x ${blockSize}, dpr ${dpr}`);
+            //this.setNewCanvasSize(inlineSize, blockSize, dpr);
         });
     }
 
