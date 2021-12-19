@@ -11,7 +11,7 @@ export interface SerieOptions {
     showOnLegend: boolean
 }
 
-interface SerieDataCommon {
+export interface SerieDataCommon {
     name: string;
     options: SerieOptions;
 }

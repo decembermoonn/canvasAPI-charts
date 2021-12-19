@@ -1,14 +1,11 @@
-import { ContextSource, ResizeObserverEntryUpdated } from "../models";
+import { SerieDataCommon, ChartOptions, ContextSource, SerieOptions } from "../models";
+import ChartUtils from "./ChartUtils";
 
 export abstract class Chart {
 
     context: WebGLRenderingContext;
-
-    resizeObserver: ResizeObserver;
-
-    // every time set viewport to those values.
-    displayWidth: number;
-    displayHeight: number;
+    seriesData: SerieDataCommon[];
+    chartOptions: ChartOptions;
 
     constructor(source: ContextSource) {
         let analyzedElement = source;
@@ -22,50 +19,33 @@ export abstract class Chart {
             this.context = analyzedElement;
         }
         else throw Error('Argument must be valid ID, HTMLCanvasElement or WebGLRenderingContext');
-        this.initializeCanvas();
+
+        this.chartOptions = {
+            title: 'Untitled',
+            showTitle: true,
+            showLegend: false,
+        };
+        this.seriesData = [];
+    }
+
+    public setChartOptions(options: Partial<ChartOptions>): void {
+        ChartUtils.mergeRight(options, this.chartOptions);
+    }
+
+    public setSerieOptions(newOptions: Partial<SerieOptions>, whichSeries?: string[]): void {
+        if (whichSeries) whichSeries.forEach((serieName) => {
+            const actualSerie =
+                this.seriesData.find((existingSerie) => existingSerie.name == serieName);
+            if (actualSerie) {
+                ChartUtils.mergeRight(newOptions, actualSerie.options);
+            } else {
+                console.warn(`Serie with name ${serieName} not found.`);
+            }
+        });
+        else this.seriesData.forEach((serie) => ChartUtils.mergeRight(newOptions, serie.options));
     }
 
     public abstract set X(value: string[] | number[] | number[][]);
     public abstract set Y(value: number[] | number[][]);
-    // public abstract set configuration(config: unknown);
     public abstract draw(): void;
-
-    /*
-        Content under this line will probably be deleted!
-    */
-    private initializeCanvas(): void {
-        this.resizeObserver = new ResizeObserver((entries: ResizeObserverEntryUpdated[]) => this.onResizeCallback(entries));
-        const { canvas } = this.context;
-        try {
-            this.resizeObserver.observe(canvas, { box: 'device-pixel-content-box' });
-        } catch (ex) {
-            // device-pixel-content-box is not supported so fallback to this
-            this.resizeObserver.observe(canvas, { box: 'content-box' });
-        }
-    }
-
-    private onResizeCallback(entries: ResizeObserverEntryUpdated[]): void {
-        entries.forEach((entry) => {
-            const dpr = entry.devicePixelContentBoxSize ? 1 : window.devicePixelRatio;
-            const { inlineSize, blockSize }: ResizeObserverSize = this.getWidthAndHeight(entry);
-            console.log(`Resize to ${inlineSize} x ${blockSize}, dpr ${dpr}`);
-            //this.setNewCanvasSize(inlineSize, blockSize, dpr);
-        });
-    }
-
-    private getWidthAndHeight(entry: ResizeObserverEntryUpdated): ResizeObserverSize {
-        if (entry.devicePixelContentBoxSize) return entry.devicePixelContentBoxSize[0];
-        if (entry.contentBoxSize) return entry.contentBoxSize[0];
-        return {
-            inlineSize: entry.contentRect.width,
-            blockSize: entry.contentRect.height
-        };
-    }
-
-    private setNewCanvasSize(width: number, height: number, dpr: number): void {
-        const displayWidth = Math.round(width * dpr);
-        const displayHeight = Math.round(height * dpr);
-        this.displayWidth = displayWidth;
-        this.displayHeight = displayHeight;
-    }
 }

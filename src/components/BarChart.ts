@@ -1,21 +1,14 @@
-import { MultiSerieData, ChartOptions, ContextSource, SerieOptions } from "../models";
+import { MultiSerieData, ContextSource } from "../models";
 import Draw from "../plot-logic/Draw";
 import { Chart } from "./Chart";
 import ChartUtils from "./ChartUtils";
 
 export class BarChart extends Chart {
-    optionsForChart: ChartOptions;
-    seriesData: MultiSerieData[];
     dataLabels: string[];
+    seriesData: MultiSerieData[];
 
     constructor(source: ContextSource) {
         super(source);
-        this.optionsForChart = {
-            title: 'Untitled',
-            showTitle: true,
-            showLegend: false,
-        };
-        this.seriesData = [];
     }
 
     public set X(labels: string[]) {
@@ -46,23 +39,6 @@ export class BarChart extends Chart {
                 edgeThickness: 0,
             }
         };
-    }
-
-    public setChartOptions(options: Partial<ChartOptions>): void {
-        ChartUtils.mergeRight(this.optionsForChart, options);
-    }
-
-    public setSerieOptions(newOptions: Partial<SerieOptions>, whichSeries?: string[]): void {
-        if (whichSeries) whichSeries.forEach((serieName) => {
-            const actualSerie =
-                this.seriesData.find((existingSerie) => existingSerie.name == serieName);
-            if (actualSerie) {
-                ChartUtils.mergeRight(newOptions, actualSerie.options);
-            } else {
-                console.warn(`Serie with name ${serieName} not found.`);
-            }
-        });
-        else this.seriesData.forEach((serie) => ChartUtils.mergeRight(newOptions, serie.options));
     }
 
     public draw(): void {

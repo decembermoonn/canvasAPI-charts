@@ -1,24 +1,42 @@
-import { MultiSeriePointData, ChartOptions, ContextSource, Point, SerieOptions } from "../models";
+import { MultiSeriePointData, ContextSource, Point } from "../models";
 import { Chart } from "./Chart";
-import ChartUtils from "./ChartUtils";
 
 export class PointChart extends Chart {
-    optionsForChart: ChartOptions;
+
     seriesData: MultiSeriePointData[];
 
     constructor(source: ContextSource) {
         super(source);
-        this.optionsForChart = {
-            title: 'Untitled',
-            showTitle: true,
-            showLegend: false,
-        };
-        this.seriesData = [];
     }
 
     public set points(points: Point[]) {
         const count = this.seriesData.filter((serie) => serie.name.startsWith('serie')).length;
         this.seriesData.push(this.getDefaultSerieObject(points, count + 1));
+    }
+
+    public set X(argsPerSerie: number[][]) {
+        this.seriesData =
+            argsPerSerie.map(
+                (args, index) => this.getDefaultSerieObject(
+                    args.map(arg => ({
+                        x: arg,
+                        y: 0
+                    })), index
+                )
+            );
+    }
+
+    public set Y(vals: number[][]) {
+        const { length } = this.seriesData;
+        if (!length)
+            throw Error('Values on "X" axis must be specified before setting "Y" values.');
+        const minLen = Math.min(vals.length, length);
+        for (let i = 0; i < minLen; i++) {
+            const internalMinLen = Math.min(vals[i].length, this.seriesData[i].points.length);
+            for (let j = 0; j < internalMinLen; j++) {
+                this.seriesData[i].points[j].y = vals[i][j];
+            }
+        }
     }
 
     private getDefaultSerieObject(points: Point[], index: number): MultiSeriePointData {
@@ -37,31 +55,6 @@ export class PointChart extends Chart {
                 edgeThickness: 0,
             }
         };
-    }
-
-    public set X(args: number[]) {
-        throw Error('Not implemented yet');
-    }
-
-    public set Y(vals: number[]) {
-        throw Error('Not implemented yet');
-    }
-
-    public setChartOptions(options: Partial<ChartOptions>): void {
-        ChartUtils.mergeRight(this.optionsForChart, options);
-    }
-
-    public setSerieOptions(newOptions: Partial<SerieOptions>, whichSeries?: string[]): void {
-        if (whichSeries) whichSeries.forEach((serieName) => {
-            const actualSerie =
-                this.seriesData.find((existingSerie) => existingSerie.name == serieName);
-            if (actualSerie) {
-                ChartUtils.mergeRight(newOptions, actualSerie.options);
-            } else {
-                console.warn(`Serie with name ${serieName} not found.`);
-            }
-        });
-        else this.seriesData.forEach((serie) => ChartUtils.mergeRight(newOptions, serie.options));
     }
 
     public draw(): void {
