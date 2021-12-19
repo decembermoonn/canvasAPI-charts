@@ -25,7 +25,7 @@ export abstract class Chart {
         this.initializeCanvas();
     }
 
-    public abstract set X(value: string[] | number[]);
+    public abstract set X(value: string[] | number[] | number[][]);
     public abstract set Y(value: number[] | number[][]);
     // public abstract set configuration(config: unknown);
     public abstract draw(): void;

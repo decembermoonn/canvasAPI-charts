@@ -24,6 +24,15 @@ export interface MultiSerieData extends SerieDataCommon {
     values: number[];
 }
 
+export interface Point {
+    x: number;
+    y: number;
+}
+
+export interface MultiSeriePointData extends SerieDataCommon {
+    points: Point[];
+}
+
 export interface Color {
     r: number,
     g: number,
