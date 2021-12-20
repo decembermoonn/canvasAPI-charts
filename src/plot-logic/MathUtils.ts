@@ -63,4 +63,24 @@ export default class MathUtils {
             ).flat(1);
         }
     }
+
+    getTransformationMatrix(gl: WebGLRenderingContext): number[] {
+        const translationX = 0;
+        const translationY = 0;
+        const rotationInDegrees = 0;
+        const scaleX = 1;
+        const scaleY = 1;
+
+        const identityMatrix = this.identityMatrix();
+        const projectionMatrix = this.projectionMatrix(gl.canvas.width, gl.canvas.height);
+        const translationMatrix = this.translationMatrix(translationX, translationY);
+        const rotationMatrix = this.rotationMatrix(rotationInDegrees);
+        const scaleMatrix = this.scaleMatrix(scaleX, scaleY);
+
+        let matrix = this.multiplyMatrices(identityMatrix, projectionMatrix);
+        matrix = this.multiplyMatrices(matrix, translationMatrix);
+        matrix = this.multiplyMatrices(matrix, rotationMatrix);
+        matrix = this.multiplyMatrices(matrix, scaleMatrix);
+        return matrix;
+    }
 }

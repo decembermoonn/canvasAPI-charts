@@ -1,5 +1,4 @@
 import { MultiSerieData, ContextSource } from "../models";
-import Draw from "../plot-logic/Draw";
 import { Chart } from "./Chart";
 import ChartUtils from "./ChartUtils";
 
@@ -42,8 +41,7 @@ export class BarChart extends Chart {
     }
 
     public draw(): void {
-        const draw = new Draw();
-        const c = draw.drawLines(this.context, this.seriesData[0].values);
-        draw.drawBars(this.context, this.seriesData[0].values, c);
+        this.chartDraftsman.drawLines(this.seriesData[0].values);
+        this.chartDraftsman.drawBars(this.seriesData[0].values);
     }
 }

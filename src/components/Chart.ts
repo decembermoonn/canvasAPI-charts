@@ -1,4 +1,5 @@
 import { SerieDataCommon, ChartOptions, ContextSource, SerieOptions } from "../models";
+import ChartDraftsman from "../plot-logic/ChartDraftsman";
 import ChartUtils from "./ChartUtils";
 
 export abstract class Chart {
@@ -6,6 +7,7 @@ export abstract class Chart {
     context: WebGLRenderingContext;
     seriesData: SerieDataCommon[];
     chartOptions: ChartOptions;
+    chartDraftsman: ChartDraftsman;
 
     constructor(source: ContextSource) {
         let analyzedElement = source;
@@ -26,6 +28,8 @@ export abstract class Chart {
             showLegend: false,
         };
         this.seriesData = [];
+
+        this.chartDraftsman = new ChartDraftsman(this.context);
     }
 
     public setChartOptions(options: Partial<ChartOptions>): void {
