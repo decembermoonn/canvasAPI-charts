@@ -44,6 +44,6 @@ export class PieChart extends Chart {
     }
 
     public draw(): void {
-        throw Error("Not implemented yet");
+        this.chartDraftsman.drawPie(this.seriesData, this.chartOptions);
     }
 }
