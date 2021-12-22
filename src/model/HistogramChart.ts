@@ -1,4 +1,4 @@
-import { ContextSource } from "../models";
+import { ContextSource } from "./types";
 import { BarChart } from "./BarChart";
 
 export class HistogramChart extends BarChart {

@@ -1,6 +1,5 @@
-// eslint-disable-next-line no-undef
 module.exports = {
-    entry: './src/components/ChartServant.ts',
+    entry: './src/interface/ChartServant.ts',
     experiments: {
         outputModule: true,
     },
@@ -20,10 +19,6 @@ module.exports = {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
                 exclude: /node_modules/,
-            },
-            {
-                test: /\.(glsl|vs|fs)$/,
-                loader: 'ts-shader-loader'
             }
         ],
     },

@@ -1,13 +1,16 @@
-import { SingleSerieData, ContextSource } from "../models";
+import { SingleSerieData, ContextSource } from "./types";
 import { Chart } from "./Chart";
-import ChartUtils from "./ChartUtils";
+import ChartUtils from "./utils";
+import PiePlot from "../plot/PiePlot";
 
 export class PieChart extends Chart {
 
     seriesData: SingleSerieData[];
+    plot: PiePlot;
 
     constructor(source: ContextSource) {
         super(source);
+        this.plot = new PiePlot(this.plot);
     }
 
     public set X(labels: string[]) {
@@ -30,12 +33,7 @@ export class PieChart extends Chart {
             value: 0,
             name: label,
             options: {
-                color: {
-                    r: Math.floor(Math.random() * 255),
-                    g: Math.floor(Math.random() * 255),
-                    b: Math.floor(Math.random() * 255),
-                    a: 255
-                },
+                color: Math.floor(Math.random() * 16777215).toString(16),
                 showLabels: false,
                 showOnLegend: false,
                 edgeThickness: 0,
@@ -44,6 +42,6 @@ export class PieChart extends Chart {
     }
 
     public draw(): void {
-        this.chartDraftsman.drawPie(this.seriesData, this.chartOptions);
+        this.plot.drawPie(this.seriesData, this.chartOptions);
     }
 }

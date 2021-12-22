@@ -1,4 +1,4 @@
-import { MultiSeriePointData, ContextSource, Point } from "../models";
+import { MultiSeriePointData, ContextSource, Point } from "./types";
 import { Chart } from "./Chart";
 
 export class PointChart extends Chart {
@@ -44,12 +44,7 @@ export class PointChart extends Chart {
             name: `serie${index}`,
             points,
             options: {
-                color: {
-                    r: Math.floor(Math.random() * 255),
-                    g: Math.floor(Math.random() * 255),
-                    b: Math.floor(Math.random() * 255),
-                    a: 255
-                },
+                color: Math.floor(Math.random() * 16777215).toString(16),
                 showLabels: false,
                 showOnLegend: false,
                 edgeThickness: 0,

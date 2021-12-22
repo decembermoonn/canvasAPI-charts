@@ -1,13 +1,13 @@
-import { SerieDataCommon, ChartOptions, ContextSource, SerieOptions } from "../models";
-import ChartDraftsman from "../plot-logic/ChartDraftsman";
-import ChartUtils from "./ChartUtils";
+import { SerieDataCommon, ChartOptions, ContextSource, SerieOptions } from "./types";
+import Plot from "../plot/PlotSkeleton";
+import ChartUtils from "./utils";
 
 export abstract class Chart {
 
-    context: WebGLRenderingContext;
+    context: CanvasRenderingContext2D;
     seriesData: SerieDataCommon[];
     chartOptions: ChartOptions;
-    chartDraftsman: ChartDraftsman;
+    plot: Plot;
 
     constructor(source: ContextSource) {
         let analyzedElement = source;
@@ -15,12 +15,12 @@ export abstract class Chart {
             analyzedElement = document.getElementById(analyzedElement.replace('/^#/', '')) as HTMLCanvasElement;
         }
         if (analyzedElement instanceof HTMLCanvasElement) {
-            this.context = analyzedElement.getContext('webgl');
+            this.context = analyzedElement.getContext('2d');
         }
-        else if (analyzedElement instanceof WebGLRenderingContext) {
+        else if (analyzedElement instanceof CanvasRenderingContext2D) {
             this.context = analyzedElement;
         }
-        else throw Error('Argument must be valid ID, HTMLCanvasElement or WebGLRenderingContext');
+        else throw Error('Argument must be valid ID, HTMLCanvasElement or CanvasRenderingContext2D');
 
         this.chartOptions = {
             title: 'Untitled',
@@ -29,7 +29,7 @@ export abstract class Chart {
         };
         this.seriesData = [];
 
-        this.chartDraftsman = new ChartDraftsman(this.context);
+        this.plot = new Plot(this.context);
     }
 
     public setChartOptions(options: Partial<ChartOptions>): void {

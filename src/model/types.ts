@@ -5,7 +5,7 @@ export interface ChartOptions {
 }
 
 export interface SerieOptions {
-    color: Color;
+    color: string;
     showLabels: boolean;
     edgeThickness: number;
     showOnLegend: boolean
@@ -33,19 +33,6 @@ export interface MultiSeriePointData extends SerieDataCommon {
     points: Point[];
 }
 
-export interface Color {
-    r: number,
-    g: number,
-    b: number,
-    a: number,
-}
-
-export type ContextSource = string | HTMLCanvasElement | WebGLRenderingContext;
-
-
-export interface TickInfo {
-    tickHeight: number;
-    tickCount: number;
-}
+export type ContextSource = string | HTMLCanvasElement | CanvasRenderingContext2D;
 
 export type ResizeObserverEntryUpdated = ResizeObserverEntry & { devicePixelContentBoxSize?: ResizeObserverSize[] }

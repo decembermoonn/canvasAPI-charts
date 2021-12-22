@@ -1,4 +1,4 @@
-import { ContextSource } from "../models";
+import { ContextSource } from "./types";
 import { PointChart } from "./PointChart";
 
 export class AreaChart extends PointChart {

@@ -1,6 +1,6 @@
-import { MultiSerieData, ContextSource } from "../models";
+import { MultiSerieData, ContextSource } from "./types";
 import { Chart } from "./Chart";
-import ChartUtils from "./ChartUtils";
+import ChartUtils from "./utils";
 
 export class BarChart extends Chart {
     dataLabels: string[];
@@ -27,12 +27,7 @@ export class BarChart extends Chart {
             values: serie,
             name: `serie${index}`,
             options: {
-                color: {
-                    r: Math.floor(Math.random() * 255),
-                    g: Math.floor(Math.random() * 255),
-                    b: Math.floor(Math.random() * 255),
-                    a: 255
-                },
+                color: Math.floor(Math.random() * 16777215).toString(16),
                 showLabels: false,
                 showOnLegend: false,
                 edgeThickness: 0,
@@ -41,7 +36,7 @@ export class BarChart extends Chart {
     }
 
     public draw(): void {
-        this.chartDraftsman.drawLines(this.seriesData[0].values);
-        this.chartDraftsman.drawBars(this.seriesData[0].values);
+        // this.chartDraftsman.drawLines(this.seriesData[0].values);
+        // this.chartDraftsman.drawBars(this.seriesData[0].values);
     }
 }
