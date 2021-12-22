@@ -1,13 +1,16 @@
 import { MultiSerieData, ContextSource } from "./types";
 import { Chart } from "./Chart";
 import ChartUtils from "./utils";
+import BarPlot from "../plot/BarPlot";
 
 export class BarChart extends Chart {
     dataLabels: string[];
     seriesData: MultiSerieData[];
+    plot: BarPlot;
 
     constructor(source: ContextSource) {
         super(source);
+        this.plot = new BarPlot(this.plot);
     }
 
     public set X(labels: string[]) {
@@ -36,6 +39,7 @@ export class BarChart extends Chart {
     }
 
     public draw(): void {
+        this.plot.drawBars(this.seriesData, this.chartOptions);
         // this.chartDraftsman.drawLines(this.seriesData[0].values);
         // this.chartDraftsman.drawBars(this.seriesData[0].values);
     }

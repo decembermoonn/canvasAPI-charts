@@ -1,5 +1,6 @@
-import { ChartOptions } from "../model/types";
-import { FrameRect } from "./types";
+import { ChartOptions, MultiSerieData } from "../model/types";
+import { FrameRect, TickInfo } from "./types";
+import { getTickInfo } from "./utils";
 
 export default class PlotSkeleton {
     ctx: CanvasRenderingContext2D;
@@ -90,5 +91,24 @@ export default class PlotSkeleton {
             contentFrame = this.drawLegend(contentFrame);
         this.strokeFrameForTest(contentFrame, 'yellow');
         return contentFrame;
+    }
+
+    protected drawGridHorizontalLines(series: MultiSerieData[], frame: FrameRect): TickInfo {
+        const { ctx } = this;
+        const MOST_TICKS = 10;
+        const max = Math.max(...series.map(serie => Math.max(...serie.values)));
+        const tickInfo = getTickInfo(max, MOST_TICKS);
+        const singleH = frame.h / tickInfo.tickCount + 1;
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'gray';
+        for (let i = 1; i <= tickInfo.tickCount; i++) {
+            const y = frame.y + singleH * i;
+            ctx.beginPath();
+            ctx.moveTo(frame.x, y);
+            ctx.lineTo(frame.x + frame.w, y);
+            ctx.stroke();
+            ctx.closePath();
+        }
+        return tickInfo;
     }
 }
