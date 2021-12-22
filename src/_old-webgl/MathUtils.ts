@@ -1,4 +1,4 @@
-export default class DrawUtils {
+export default class MathUtils {
     identityMatrix(): number[] {
         return [
             1, 0, 0,
@@ -6,11 +6,14 @@ export default class DrawUtils {
             0, 0, 1,
         ];
     }
+    // Rysowanie od dolnego lewego rogu.
+    // Chcąc rysować od górnego lewego,
+    // zmienić na -2/height oraz +1
     projectionMatrix(width: number, height: number): number[] {
         return [
             2 / width, 0, 0,
-            0, -2 / height, 0,
-            -1, 1, 1
+            0, 2 / height, 0,
+            -1, -1, 1
         ];
     }
     translationMatrix(tx: number, ty: number): number[] {
@@ -59,5 +62,25 @@ export default class DrawUtils {
                 )
             ).flat(1);
         }
+    }
+
+    getTransformationMatrix(gl: WebGLRenderingContext): number[] {
+        const translationX = 0;
+        const translationY = 0;
+        const rotationInDegrees = 0;
+        const scaleX = 1;
+        const scaleY = 1;
+
+        const identityMatrix = this.identityMatrix();
+        const projectionMatrix = this.projectionMatrix(gl.canvas.width, gl.canvas.height);
+        const translationMatrix = this.translationMatrix(translationX, translationY);
+        const rotationMatrix = this.rotationMatrix(rotationInDegrees);
+        const scaleMatrix = this.scaleMatrix(scaleX, scaleY);
+
+        let matrix = this.multiplyMatrices(identityMatrix, projectionMatrix);
+        matrix = this.multiplyMatrices(matrix, translationMatrix);
+        matrix = this.multiplyMatrices(matrix, rotationMatrix);
+        matrix = this.multiplyMatrices(matrix, scaleMatrix);
+        return matrix;
     }
 }
