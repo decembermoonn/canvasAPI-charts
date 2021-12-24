@@ -14,7 +14,7 @@ export default class BarPlot extends PlotSkeleton {
 
     drawBars(series: MultiSerieData[], chartOptions: ChartOptions): void {
         const COL_SPACE_SIZE = 0.75;
-        const plotFrame = this.prepareChartForDrawing(chartOptions);
+        const plotFrame = this.prepareChartForDrawing(chartOptions, series);
         const tickInfo = this.drawGridHorizontalLines(series, plotFrame);
 
         const barCount = series.length;

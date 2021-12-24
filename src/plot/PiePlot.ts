@@ -12,7 +12,7 @@ export default class PiePlot extends PlotSkeleton {
         // should be 2 to fill whole available space
         const RADIUS_DIVIDER = 2.5;
         const { ctx } = this;
-        const plotFrame = this.prepareChartForDrawing(chartOptions);
+        const plotFrame = this.prepareChartForDrawing(chartOptions, series);
         const data = this.mapSeriesToPieDegAndColor(series);
         const radius = Math.min(plotFrame.w, plotFrame.h) / RADIUS_DIVIDER;
         const center = {
