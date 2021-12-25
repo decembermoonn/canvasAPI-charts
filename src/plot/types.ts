@@ -1,3 +1,5 @@
+import type { draw } from 'patternomaly';
+
 export interface TickInfo {
     tickHeight: number;
     tickCount: number;
@@ -14,4 +16,5 @@ export interface PiePartData {
     rad: number;
     color: string;
     thickness: number;
+    shape?: Parameters<typeof draw>[0]
 }

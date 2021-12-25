@@ -37,6 +37,7 @@ export class PieChart extends Chart {
                 showLabels: false,
                 showOnLegend: false,
                 edgeThickness: 0,
+                shape: 'box',
             }
         };
     }

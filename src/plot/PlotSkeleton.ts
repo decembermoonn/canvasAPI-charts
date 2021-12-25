@@ -1,3 +1,4 @@
+import { draw } from "patternomaly";
 import { ChartOptions, MultiSerieData, SerieDataCommon } from "../model/types";
 import { FrameRect, TickInfo } from "./types";
 import { getTickInfo } from "./utils";
@@ -79,7 +80,15 @@ export default class PlotSkeleton {
         const PADDING_MULTIPIER = 0.6;
         const { ctx } = this;
         const { options, name } = serie;
-        ctx.fillStyle = options.color;
+
+        try {
+            ctx.fillStyle = draw(options.shape, options.color, 'black');
+        } catch {
+            ctx.fillStyle = options.color;
+            if (options.shape != undefined)
+                console.warn(`${options.shape} is invalid shape. See documentation.`);
+        }
+
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 3;
         this.strokeFrameForTest(frame, options.color);
