@@ -30,12 +30,13 @@ export default class PiePlot extends PlotSkeleton {
             ctx.arc(center.x, center.y, radius, total, total += entry.rad);
             ctx.lineTo(center.x, center.y);
 
-            try {
-                ctx.fillStyle = draw(entry.shape, entry.color, 'black');
-            } catch {
-                ctx.fillStyle = entry.color;
-                if (entry.shape != undefined)
+            ctx.fillStyle = entry.color;
+            if (entry.shape != undefined) {
+                try {
+                    ctx.fillStyle = draw(entry.shape, entry.color, 'black');
+                } catch {
                     console.warn(`${entry.shape} is invalid shape. See documentation.`);
+                }
             }
 
             ctx.fill();

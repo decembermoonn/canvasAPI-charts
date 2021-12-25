@@ -81,12 +81,13 @@ export default class PlotSkeleton {
         const { ctx } = this;
         const { options, name } = serie;
 
-        try {
-            ctx.fillStyle = draw(options.shape, options.color, 'black');
-        } catch {
-            ctx.fillStyle = options.color;
-            if (options.shape != undefined)
+        ctx.fillStyle = options.color;
+        if (options.shape != undefined) {
+            try {
+                ctx.fillStyle = draw(options.shape, options.color, 'black');
+            } catch {
                 console.warn(`${options.shape} is invalid shape. See documentation.`);
+            }
         }
 
         ctx.strokeStyle = 'black';
