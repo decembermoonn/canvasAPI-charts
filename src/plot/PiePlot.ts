@@ -10,11 +10,10 @@ export default class PiePlot extends PlotSkeleton {
     }
 
     drawPie(series: SingleSerieData[], chartOptions: ChartOptions): void {
-        // should be 2 to fill whole available space
         const RADIUS_DIVIDER = 2.5;
         const { ctx } = this;
         const plotFrame = this.prepareChartForDrawing(chartOptions, series);
-        const data = this.mapSeriesToPieDegColorShape(series);
+        const data = this.mapSeriesToPiePartData(series);
         const radius = Math.min(plotFrame.w, plotFrame.h) / RADIUS_DIVIDER;
         const center = {
             x: plotFrame.x + plotFrame.w / 2,
@@ -27,7 +26,7 @@ export default class PiePlot extends PlotSkeleton {
         data.forEach(entry => {
             ctx.beginPath();
             ctx.moveTo(center.x, center.y);
-            ctx.arc(center.x, center.y, radius, total, total += entry.rad);
+            ctx.arc(center.x, center.y, radius, total, total + entry.radians);
             ctx.lineTo(center.x, center.y);
 
             ctx.fillStyle = entry.color;
@@ -38,22 +37,35 @@ export default class PiePlot extends PlotSkeleton {
                     console.warn(`${entry.shape} is invalid shape. See documentation.`);
                 }
             }
-
             ctx.fill();
-            if (entry.thickness > 0) {
-                ctx.lineWidth = entry.thickness;
+            if (entry.edgeThickness > 0) {
+                ctx.lineWidth = entry.edgeThickness;
                 ctx.stroke();
             }
+            if (entry.showLabels) {
+                const radVal = total + entry.radians / 2;
+                ctx.fillStyle = 'black';
+                ctx.font = `${Math.floor(radius / 5)}px sans-serif`;
+
+                const text = String(entry.value);
+                const { width, actualBoundingBoxAscent } = ctx.measureText(text);
+                const x = (center.x + Math.cos(radVal) * (radius + width)) - (width / 2);
+                const y = (center.y + Math.sin(radVal) * (radius + actualBoundingBoxAscent)) + (actualBoundingBoxAscent / 2);
+                ctx.fillText(text, x, y);
+            }
+            total += entry.radians;
         });
     }
 
-    private mapSeriesToPieDegColorShape(series: SingleSerieData[]): PiePartData[] {
+    private mapSeriesToPiePartData(series: SingleSerieData[]): PiePartData[] {
         const total = series.map(serie => serie.value).reduce((a, b) => a + b, 0);
         return series.map(serie => ({
-            rad: serie.value * 2 * Math.PI / total,
+            radians: serie.value * 2 * Math.PI / total,
             color: serie.options.color,
-            thickness: serie.options.edgeThickness,
+            edgeThickness: serie.options.edgeThickness,
             shape: serie.options.shape,
+            showLabels: serie.options.showLabels,
+            value: serie.value
         }));
     }
 }

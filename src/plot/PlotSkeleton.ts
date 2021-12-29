@@ -109,7 +109,8 @@ export default class PlotSkeleton {
         };
         ctx.fillStyle = 'black';
         ctx.font = `${Math.floor(orienationLen / 4)}px sans-serif`;
-        ctx.fillText(name, center.x, center.y, frame.w - orienationLen);
+        const { actualBoundingBoxAscent } = ctx.measureText(name);
+        ctx.fillText(name, center.x, center.y + actualBoundingBoxAscent / 2, frame.w - orienationLen);
     }
 
     private drawLegend(contentFrame: FrameRect, series: SerieDataCommon[]): FrameRect {

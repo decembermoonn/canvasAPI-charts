@@ -35,7 +35,5 @@ export default class BarPlot extends PlotSkeleton {
                 );
             }
         }
-
-
     }
 }
