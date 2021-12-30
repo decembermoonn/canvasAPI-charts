@@ -1,7 +1,7 @@
 import { draw } from "patternomaly";
 import { ChartOptions, MultiSerieData, SerieDataCommon } from "../model/types";
-import { FrameRect, TickInfo } from "./types";
-import { getTickInfo } from "./utils";
+import { FrameRect } from "./types";
+import { getTickCount } from "./utils";
 
 export default class PlotSkeleton {
     ctx: CanvasRenderingContext2D;
@@ -151,15 +151,16 @@ export default class PlotSkeleton {
         return contentFrame;
     }
 
-    protected drawGridHorizontalLines(series: MultiSerieData[], frame: FrameRect): TickInfo {
+    protected drawGridHorizontalLines(series: MultiSerieData[], frame: FrameRect): number {
         const { ctx } = this;
         const MOST_TICKS = 10;
         const max = Math.max(...series.map(serie => Math.max(...serie.values)));
-        const tickInfo = getTickInfo(max, MOST_TICKS);
-        const singleH = frame.h / tickInfo.tickCount + 1;
-        ctx.lineWidth = 3;
+        const tickCount = getTickCount(max, MOST_TICKS);
+        console.log(tickCount);
+        const singleH = frame.h / (tickCount + 1);
+        ctx.lineWidth = 1;
         ctx.strokeStyle = 'gray';
-        for (let i = 1; i <= tickInfo.tickCount; i++) {
+        for (let i = 1; i <= tickCount; i++) {
             const y = frame.y + singleH * i;
             ctx.beginPath();
             ctx.moveTo(frame.x, y);
@@ -167,6 +168,6 @@ export default class PlotSkeleton {
             ctx.stroke();
             ctx.closePath();
         }
-        return tickInfo;
+        return tickCount;
     }
 }

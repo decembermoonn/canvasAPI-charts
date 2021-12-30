@@ -6,33 +6,61 @@ export default class BarPlot extends PlotSkeleton {
         super(skeleton.ctx);
     }
 
-    drawBar(xpos: number, ypos: number, width: number, height: number, color: string): void {
+    fillBar(xpos: number, ypos: number, width: number, height: number, color: string, borderWidth?: number): void {
         this.ctx.fillStyle = color;
-        this.ctx.lineWidth = 1;
         this.ctx.fillRect(xpos, ypos, width, height);
+        if (borderWidth) {
+            this.ctx.lineWidth = height ? borderWidth : 1;
+            this.strokeBar(xpos, ypos, width, height);
+        }
     }
 
-    drawBars(series: MultiSerieData[], chartOptions: ChartOptions): void {
+    strokeBar(xpos: number, ypos: number, width: number, height: number): void {
+        const { ctx } = this;
+        ctx.beginPath();
+        ctx.moveTo(xpos, ypos + height);
+        ctx.lineTo(xpos, ypos);
+        ctx.lineTo(xpos + width, ypos);
+        ctx.lineTo(xpos + width, ypos + height);
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+    }
+
+    drawBars(labels: string[], series: MultiSerieData[], chartOptions: ChartOptions): void {
         const COL_SPACE_SIZE = 0.75;
         const plotFrame = this.prepareChartForDrawing(chartOptions, series);
-        const tickInfo = this.drawGridHorizontalLines(series, plotFrame);
+        const tickCount = this.drawGridHorizontalLines(series, plotFrame);
 
-        const barCount = series.length;
-        const singleW = plotFrame.w / barCount;
+        const serieCount = series.length;
+        const barAreas = labels.length;
+
+        // split space for each 'sticked' bars equally
+        const singleW = plotFrame.w / barAreas;
         const singleWWithPadding = singleW * COL_SPACE_SIZE;
         const spaceX = (singleW - singleWWithPadding) / 2;
-        const serieCount = series[0].values.length;
         const oneColumnWidth = singleWWithPadding / serieCount * COL_SPACE_SIZE;
+
         for (let i = 0; i < serieCount; i++) {
-            for (let j = 0; j < barCount; j++) {
-                const h = series[j].values[i] * plotFrame.h / tickInfo.tickCount + 1;
-                this.drawBar(
-                    (plotFrame.x + j * singleW + spaceX) + (i * oneColumnWidth),
-                    plotFrame.y + plotFrame.h - h,
+            for (let j = 0; j < barAreas; j++) {
+                const x = (plotFrame.x + j * singleW + spaceX) + (i * oneColumnWidth);
+                const h = series[i].values[j] * plotFrame.h / (tickCount + 1);
+                const y = plotFrame.y + plotFrame.h - h;
+                this.fillBar(
+                    x,
+                    y,
                     oneColumnWidth,
                     h,
                     series[i].options.color,
+                    series[i].options.edgeThickness
                 );
+                if (series[i].options.showValue) {
+                    const fontSize = Math.floor(oneColumnWidth * 0.7);
+                    const strVal = String(series[i].values[j]);
+                    this.ctx.font = `${fontSize}px sans-serif`;
+                    const { width } = this.ctx.measureText(strVal);
+                    this.ctx.fillStyle = 'black';
+                    this.ctx.fillText(strVal, x + oneColumnWidth / 2 - width / 2, y - 4);
+                }
             }
         }
     }

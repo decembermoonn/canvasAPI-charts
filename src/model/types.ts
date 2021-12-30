@@ -8,10 +8,11 @@ export interface ChartOptions {
 
 export interface SerieOptions {
     color: string;
-    showLabels: boolean;
+    showValue: boolean;
     edgeThickness: number;
     showOnLegend: boolean;
     shape?: Parameters<typeof draw>[0];
+    label?: string  // Ignored for PieChart.
 }
 
 export interface SerieDataCommon {

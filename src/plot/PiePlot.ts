@@ -42,7 +42,7 @@ export default class PiePlot extends PlotSkeleton {
                 ctx.lineWidth = entry.edgeThickness;
                 ctx.stroke();
             }
-            if (entry.showLabels) {
+            if (entry.showValue) {
                 const radVal = total + entry.radians / 2;
                 ctx.fillStyle = 'black';
                 ctx.font = `${Math.floor(radius / 5)}px sans-serif`;
@@ -64,7 +64,7 @@ export default class PiePlot extends PlotSkeleton {
             color: serie.options.color,
             edgeThickness: serie.options.edgeThickness,
             shape: serie.options.shape,
-            showLabels: serie.options.showLabels,
+            showValue: serie.options.showValue,
             value: serie.value
         }));
     }
