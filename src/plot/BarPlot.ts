@@ -1,13 +1,21 @@
-import { ChartOptions, MultiSerieData } from "../model/types";
+import { ChartOptions, MultiSerieData, SerieOptions } from "../model/types";
 import PlotSkeleton from "./PlotSkeleton";
+import { draw } from 'patternomaly';
 
 export default class BarPlot extends PlotSkeleton {
     constructor(skeleton: PlotSkeleton) {
         super(skeleton.ctx);
     }
 
-    fillBar(xpos: number, ypos: number, width: number, height: number, color: string, borderWidth?: number): void {
+    fillBar(xpos: number, ypos: number, width: number, height: number, color: string, borderWidth?: number, shape?: SerieOptions['shape']): void {
         this.ctx.fillStyle = color;
+        if (shape != undefined) {
+            try {
+                this.ctx.fillStyle = draw(shape, color, 'black');
+            } catch {
+                console.warn(`${shape} is invalid shape. See documentation.`);
+            }
+        }
         this.ctx.fillRect(xpos, ypos, width, height);
         if (borderWidth) {
             this.ctx.lineWidth = height ? borderWidth : 1;
@@ -51,7 +59,8 @@ export default class BarPlot extends PlotSkeleton {
                     oneColumnWidth,
                     h,
                     series[i].options.color,
-                    series[i].options.edgeThickness
+                    series[i].options.edgeThickness,
+                    series[i].options.shape
                 );
                 if (series[i].options.showValue) {
                     const fontSize = Math.floor(oneColumnWidth * 0.7);

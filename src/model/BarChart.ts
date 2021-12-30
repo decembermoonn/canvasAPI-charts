@@ -41,6 +41,7 @@ export class BarChart extends Chart {
                 showValue: false,
                 showOnLegend: false,
                 edgeThickness: 0,
+                shape: undefined,
             }
         };
     }
