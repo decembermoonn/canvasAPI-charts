@@ -12,7 +12,6 @@ export interface SerieOptions {
     edgeThickness: number;
     showOnLegend: boolean;
     shape?: Parameters<typeof draw>[0];
-    label?: string  // Ignored for PieChart.
 }
 
 export interface SerieDataCommon {

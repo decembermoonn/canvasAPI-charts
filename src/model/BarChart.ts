@@ -25,6 +25,13 @@ export class BarChart extends Chart {
         this.seriesData = mappedSeries.map((serie, index) => this.getDefaultSerieObject(serie, index));
     }
 
+    public set serieNames(names: string[]) {
+        const min = Math.min(names.length, this.seriesData.length);
+        for (let i = 0; i < min; i++) {
+            this.seriesData[i].name = names[i];
+        }
+    }
+
     private getDefaultSerieObject(serie: number[], index: number): MultiSerieData {
         return {
             values: serie,
