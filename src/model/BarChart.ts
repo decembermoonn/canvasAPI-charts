@@ -40,7 +40,7 @@ export class BarChart extends Chart {
                 color: Math.floor(Math.random() * 16777215).toString(16),
                 showValue: false,
                 showOnLegend: false,
-                edgeThickness: 0,
+                borderWidth: 0,
                 shape: undefined,
             }
         };

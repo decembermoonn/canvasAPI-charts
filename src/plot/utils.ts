@@ -16,6 +16,15 @@ export function resizeCanvasToDisplaySize(canvas: HTMLCanvasElement): boolean {
     return false;
 }
 
+/**
+ * Calculates ticks for several charts. 
+ * Algorithm by 'Mark Ransom'. Ported to JS and modified by me.
+ * @see {@link https://stackoverflow.com/questions/361681/} for original algorithm code.
+ * @param largest - previously determined largest value.
+ * @param mostTicks - maximal number of possible ticks.
+ * @returns tick height and number of ticks.  
+ * @summary
+*/
 export function getTickInfo(largest: number, mostTicks: number): TickInfo {
     const minimum = largest / mostTicks;
     const magnitude = Math.pow(10, Math.floor(Math.log10(minimum)));

@@ -10,7 +10,7 @@ export interface ChartOptions {
 export interface SerieOptions {
     color: string;
     showValue: boolean;
-    edgeThickness: number;
+    borderWidth: number;
     showOnLegend: boolean;
     shape?: Parameters<typeof draw>[0];
 }

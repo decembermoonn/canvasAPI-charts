@@ -38,8 +38,8 @@ export default class PiePlot extends PlotSkeleton {
                 }
             }
             ctx.fill();
-            if (entry.edgeThickness > 0) {
-                ctx.lineWidth = entry.edgeThickness;
+            if (entry.borderWidth > 0) {
+                ctx.lineWidth = entry.borderWidth;
                 ctx.stroke();
             }
             if (entry.showValue) {
@@ -62,7 +62,7 @@ export default class PiePlot extends PlotSkeleton {
         return series.map(serie => ({
             radians: serie.value * 2 * Math.PI / total,
             color: serie.options.color,
-            edgeThickness: serie.options.edgeThickness,
+            borderWidth: serie.options.borderWidth,
             shape: serie.options.shape,
             showValue: serie.options.showValue,
             value: serie.value
