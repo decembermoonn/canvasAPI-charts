@@ -1,7 +1,7 @@
 import { draw } from "patternomaly";
 import { ChartOptions, MultiSerieData, SerieDataCommon } from "../model/types";
-import { FrameRect } from "./types";
-import { getTickCount } from "./utils";
+import { FrameRect, TickInfo } from "./types";
+import { getTickInfo } from "./utils";
 
 export default class PlotSkeleton {
     ctx: CanvasRenderingContext2D;
@@ -136,6 +136,26 @@ export default class PlotSkeleton {
         return this.getRemainingContentFrame(contentFrame, legendFrame);
     }
 
+    protected drawLabels(frame: FrameRect): FrameRect {
+        const LABELS_SPACE_MULTIPIER = 0.05;
+        const { x, w } = frame;
+        const h = frame.h * LABELS_SPACE_MULTIPIER;
+        const y = frame.y + frame.h - h;
+        const labelsFrame = {
+            x,
+            y,
+            w,
+            h
+        };
+        this.strokeFrameForTest(labelsFrame, 'pink');
+        return {
+            x: frame.x,
+            y: frame.y,
+            w: frame.w,
+            h: frame.h - h
+        };
+    }
+
     protected prepareChartForDrawing(chartOptions: ChartOptions, series: SerieDataCommon[]): FrameRect {
         const { ctx } = this;
         const { width, height } = ctx.canvas;
@@ -151,23 +171,28 @@ export default class PlotSkeleton {
         return contentFrame;
     }
 
-    protected drawGridHorizontalLines(series: MultiSerieData[], frame: FrameRect): number {
+    protected drawGridHorizontalLines(series: MultiSerieData[], frame: FrameRect): TickInfo {
         const { ctx } = this;
         const MOST_TICKS = 10;
         const max = Math.max(...series.map(serie => Math.max(...serie.values)));
-        const tickCount = getTickCount(max, MOST_TICKS);
-        console.log(tickCount);
+        const { tickCount, tickHeight } = getTickInfo(max, MOST_TICKS);
         const singleH = frame.h / (tickCount + 1);
         ctx.lineWidth = 1;
         ctx.strokeStyle = 'gray';
         for (let i = 1; i <= tickCount; i++) {
             const y = frame.y + singleH * i;
+            const val = String((tickCount + 1 - i) * tickHeight);
+            const { width } = this.ctx.measureText(val);
+            ctx.fillText(val, frame.x, y);
             ctx.beginPath();
-            ctx.moveTo(frame.x, y);
+            ctx.moveTo(frame.x + width, y);
             ctx.lineTo(frame.x + frame.w, y);
             ctx.stroke();
             ctx.closePath();
         }
-        return tickCount;
+        return {
+            tickCount,
+            tickHeight
+        };
     }
 }

@@ -36,8 +36,14 @@ export default class BarPlot extends PlotSkeleton {
 
     drawBars(labels: string[], series: MultiSerieData[], chartOptions: ChartOptions): void {
         const COL_SPACE_SIZE = 0.75;
-        const plotFrame = this.prepareChartForDrawing(chartOptions, series);
-        const tickCount = this.drawGridHorizontalLines(series, plotFrame);
+        let plotFrame = this.prepareChartForDrawing(chartOptions, series);
+        let labelFrameH = 0;
+        if (chartOptions.showLabels) {
+            const befFrameHeight = plotFrame.h;
+            plotFrame = this.drawLabels(plotFrame);
+            labelFrameH = befFrameHeight - plotFrame.h;
+        }
+        const { tickCount, tickHeight } = this.drawGridHorizontalLines(series, plotFrame);
 
         const serieCount = series.length;
         const barAreas = labels.length;
@@ -46,12 +52,21 @@ export default class BarPlot extends PlotSkeleton {
         const singleW = plotFrame.w / barAreas;
         const singleWWithPadding = singleW * COL_SPACE_SIZE;
         const spaceX = (singleW - singleWWithPadding) / 2;
-        const oneColumnWidth = singleWWithPadding / serieCount * COL_SPACE_SIZE;
+        const oneColumnWidth = singleWWithPadding / serieCount;
 
+        if (chartOptions.showLabels) {
+            this.ctx.font = `${Math.floor(labelFrameH)}px sans-serif`;
+            this.ctx.fillStyle = 'black';
+            for (let i = 0; i < labels.length; i++) {
+                const { width } = this.ctx.measureText(labels[i]);
+                const xPos = plotFrame.x + i * singleW + spaceX - width / 2 + singleWWithPadding / 2;
+                this.ctx.fillText(labels[i], xPos, plotFrame.y + plotFrame.h + labelFrameH * 0.8, singleW);
+            }
+        }
         for (let i = 0; i < serieCount; i++) {
             for (let j = 0; j < barAreas; j++) {
                 const x = (plotFrame.x + j * singleW + spaceX) + (i * oneColumnWidth);
-                const h = series[i].values[j] * plotFrame.h / (tickCount + 1);
+                const h = series[i].values[j] * plotFrame.h / ((tickCount + 1) * tickHeight);
                 const y = plotFrame.y + plotFrame.h - h;
                 this.fillBar(
                     x,
@@ -63,12 +78,12 @@ export default class BarPlot extends PlotSkeleton {
                     series[i].options.shape
                 );
                 if (series[i].options.showValue) {
-                    const fontSize = Math.floor(oneColumnWidth * 0.7);
+                    const fontSize = Math.floor(oneColumnWidth * 0.5);
                     const strVal = String(series[i].values[j]);
                     this.ctx.font = `${fontSize}px sans-serif`;
                     const { width } = this.ctx.measureText(strVal);
                     this.ctx.fillStyle = 'black';
-                    this.ctx.fillText(strVal, x + oneColumnWidth / 2 - width / 2, y - 4);
+                    this.ctx.fillText(strVal, x + oneColumnWidth / 2 - width / 2, y - 4, oneColumnWidth);
                 }
             }
         }

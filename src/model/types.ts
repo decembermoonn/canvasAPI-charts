@@ -4,6 +4,7 @@ export interface ChartOptions {
     title: string;
     showTitle: boolean;
     showLegend: boolean;
+    showLabels?: boolean;
 }
 
 export interface SerieOptions {

@@ -26,6 +26,7 @@ export abstract class Chart {
             title: 'Untitled',
             showTitle: true,
             showLegend: false,
+            showLabels: true,
         };
         this.seriesData = [];
 
