@@ -1,3 +1,5 @@
+import { SerieOptions } from "../model/types";
+
 export interface TickInfo {
     tickHeight: number;
     tickCount: number;
@@ -10,8 +12,4 @@ export interface FrameRect {
     h: number;
 }
 
-export interface PiePartData {
-    rad: number;
-    color: string;
-    thickness: number;
-}
+export type PiePartData = Omit<SerieOptions, 'showOnLegend'> & { radians: number, value: number };

@@ -45,7 +45,7 @@ export class PointChart extends Chart {
             points,
             options: {
                 color: Math.floor(Math.random() * 16777215).toString(16),
-                showLabels: false,
+                showValue: false,
                 showOnLegend: false,
                 edgeThickness: 0,
             }

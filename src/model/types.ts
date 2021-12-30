@@ -1,14 +1,18 @@
+import type { draw } from 'patternomaly';
+
 export interface ChartOptions {
     title: string;
     showTitle: boolean;
     showLegend: boolean;
+    showLabels?: boolean;
 }
 
 export interface SerieOptions {
     color: string;
-    showLabels: boolean;
+    showValue: boolean;
     edgeThickness: number;
-    showOnLegend: boolean
+    showOnLegend: boolean;
+    shape?: Parameters<typeof draw>[0];
 }
 
 export interface SerieDataCommon {

@@ -24,5 +24,8 @@ export function getTickInfo(largest: number, mostTicks: number): TickInfo {
     const tick = residual < 10 ? table.find((e) => (e > residual)) : 10;
     const tickHeight = tick * magnitude;
     const tickCount = Math.ceil(largest / tickHeight);
-    return { tickHeight, tickCount };
+    return {
+        tickHeight,
+        tickCount
+    };
 }

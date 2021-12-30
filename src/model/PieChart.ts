@@ -34,9 +34,10 @@ export class PieChart extends Chart {
             name: label,
             options: {
                 color: Math.floor(Math.random() * 16777215).toString(16),
-                showLabels: false,
+                showValue: false,
                 showOnLegend: false,
                 edgeThickness: 0,
+                shape: undefined,
             }
         };
     }
