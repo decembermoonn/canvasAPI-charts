@@ -1,6 +1,6 @@
 import { ChartOptions, MultiSerieData, SerieOptions } from "../model/types";
 import PlotSkeleton from "./PlotSkeleton";
-import { draw } from 'patternomaly';
+import { applyShapeOrColor } from "./utils";
 
 export default class BarPlot extends PlotSkeleton {
     COL_SPACE_SIZE = 0.75;
@@ -8,52 +8,6 @@ export default class BarPlot extends PlotSkeleton {
 
     constructor(skeleton: PlotSkeleton) {
         super(skeleton.ctx);
-    }
-
-    private drawBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptions, value: number): void {
-        this.fillBar(xpos, ypos, width, height, options);
-        const { showValue, borderWidth } = options;
-        if (borderWidth)
-            this.strokeBar(xpos, ypos, width, height, borderWidth);
-        if (showValue)
-            this.addBarValue(xpos, ypos, width, value);
-    }
-
-    private fillBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptions): void {
-        const { color, shape } = options;
-        this.ctx.fillStyle = color;
-        if (shape != undefined) {
-            try {
-                this.ctx.fillStyle = draw(shape, color, 'black');
-            } catch {
-                console.warn(`${shape} is invalid shape. See documentation.`);
-            }
-        }
-        this.ctx.fillRect(xpos, ypos, width, height);
-    }
-
-    private strokeBar(xpos: number, ypos: number, width: number, height: number, borderWidth: number): void {
-        this.ctx.lineWidth = height ? borderWidth : 1;
-        this.ctx.beginPath();
-        this.ctx.moveTo(xpos, ypos + height);
-        this.ctx.lineTo(xpos, ypos);
-        this.ctx.lineTo(xpos + width, ypos);
-        this.ctx.lineTo(xpos + width, ypos + height);
-        this.ctx.strokeStyle = 'black';
-        this.ctx.stroke();
-    }
-
-    private addBarValue(xpos: number, ypos: number, width: number, value: number): void {
-        this.ctx.fillStyle = 'black';
-        const valueString = String(value);
-        const wText = this.ctx.measureText(valueString).width;
-        const xValueCentered = xpos + width / 2 - wText / 2;
-        this.ctx.fillText(
-            valueString,
-            xValueCentered,
-            ypos - this.VALUE_BOTTOM_PADDING,
-            width
-        );
     }
 
     drawBars(labels: string[], series: MultiSerieData[], chartOptions: ChartOptions): void {
@@ -106,5 +60,44 @@ export default class BarPlot extends PlotSkeleton {
                 );
             }
         }
+    }
+
+    private drawBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptions, value: number): void {
+        this.fillBar(xpos, ypos, width, height, options);
+        const { showValue, borderWidth } = options;
+        if (borderWidth)
+            this.strokeBar(xpos, ypos, width, height, borderWidth);
+        if (showValue)
+            this.addBarValue(xpos, ypos, width, value);
+    }
+
+    private fillBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptions): void {
+        const { color, shape } = options;
+        applyShapeOrColor(this.ctx, shape, color);
+        this.ctx.fillRect(xpos, ypos, width, height);
+    }
+
+    private strokeBar(xpos: number, ypos: number, width: number, height: number, borderWidth: number): void {
+        this.ctx.lineWidth = height ? borderWidth : 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(xpos, ypos + height);
+        this.ctx.lineTo(xpos, ypos);
+        this.ctx.lineTo(xpos + width, ypos);
+        this.ctx.lineTo(xpos + width, ypos + height);
+        this.ctx.strokeStyle = 'black';
+        this.ctx.stroke();
+    }
+
+    private addBarValue(xpos: number, ypos: number, width: number, value: number): void {
+        this.ctx.fillStyle = 'black';
+        const valueString = String(value);
+        const wText = this.ctx.measureText(valueString).width;
+        const xValueCentered = xpos + width / 2 - wText / 2;
+        this.ctx.fillText(
+            valueString,
+            xValueCentered,
+            ypos - this.VALUE_BOTTOM_PADDING,
+            width
+        );
     }
 }

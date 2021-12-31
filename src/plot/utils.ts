@@ -1,3 +1,5 @@
+import { draw } from "patternomaly";
+import { SerieOptions } from "../model/types";
 import { TickInfo } from "./types";
 
 /**
@@ -37,4 +39,15 @@ export function getTickInfo(largest: number, mostTicks: number): TickInfo {
         tickHeight,
         tickCount
     };
+}
+
+export function applyShapeOrColor(ctx: CanvasRenderingContext2D, shape: SerieOptions['shape'], color: string): void {
+    ctx.fillStyle = color;
+    if (shape != undefined) {
+        try {
+            ctx.fillStyle = draw(shape, color, 'black');
+        } catch {
+            console.warn(`${shape} is invalid shape. See documentation.`);
+        }
+    }
 }
