@@ -1,18 +1,18 @@
 import { ChartOptions, SingleSerieData } from "../model/types";
-import PlotSkeleton from "./PlotSkeleton";
+import Plot from "./Plot";
 import { PiePartData } from "./types";
 import { applyShapeOrColor } from "./utils";
 
-export default class PiePlot extends PlotSkeleton {
+export default class PiePlot extends Plot {
     RADIUS_DIVIDER = 2.5;
 
-    constructor(skeleton: PlotSkeleton) {
-        super(skeleton.ctx);
+    constructor(ctx: CanvasRenderingContext2D) {
+        super(ctx);
     }
 
     drawPie(series: SingleSerieData[], chartOptions: ChartOptions): void {
         const { ctx } = this;
-        const plotFrame = this.prepareChartForDrawing(chartOptions, series);
+        const plotFrame = this.plotKit.prepareChartForDrawing(chartOptions, series);
         const entries = this.mapSeriesToPiePartData(series);
 
         const pieRadius = Math.min(plotFrame.w, plotFrame.h) / this.RADIUS_DIVIDER;

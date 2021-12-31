@@ -1,24 +1,24 @@
 import { ChartOptions, MultiSerieData, SerieOptions } from "../model/types";
-import PlotSkeleton from "./PlotSkeleton";
+import Plot from "./Plot";
 import { applyShapeOrColor } from "./utils";
 
-export default class BarPlot extends PlotSkeleton {
+export default class BarPlot extends Plot {
     COL_SPACE_SIZE = 0.75;
     VALUE_BOTTOM_PADDING = 4;
 
-    constructor(skeleton: PlotSkeleton) {
-        super(skeleton.ctx);
+    constructor(ctx: CanvasRenderingContext2D) {
+        super(ctx);
     }
 
     drawBars(labels: string[], series: MultiSerieData[], chartOptions: ChartOptions): void {
-        let plotFrame = this.prepareChartForDrawing(chartOptions, series);
+        let plotFrame = this.plotKit.prepareChartForDrawing(chartOptions, series);
         let labelFrameH = 0;
         if (chartOptions.showLabels) {
             const befFrameHeight = plotFrame.h;
-            plotFrame = this.drawLabels(plotFrame);
+            plotFrame = this.plotKit.drawLabels(plotFrame);
             labelFrameH = Math.floor(befFrameHeight - plotFrame.h);
         }
-        const { tickCount, tickHeight } = this.drawGridHorizontalLines(series, plotFrame);
+        const { tickCount, tickHeight } = this.plotKit.drawGridHorizontalLines(series, plotFrame);
         const hSpaceBetweenTicks = plotFrame.h / ((tickCount + 1) * tickHeight);
 
         const serieCount = series.length;

@@ -10,7 +10,7 @@ export class PieChart extends Chart {
 
     constructor(source: ContextSource) {
         super(source);
-        this.plot = new PiePlot(this.plot);
+        this.plot = new PiePlot(this.context);
     }
 
     public set X(labels: string[]) {

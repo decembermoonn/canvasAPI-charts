@@ -10,7 +10,7 @@ export class BarChart extends Chart {
 
     constructor(source: ContextSource) {
         super(source);
-        this.plot = new BarPlot(this.plot);
+        this.plot = new BarPlot(this.context);
     }
 
     public set X(labels: string[]) {

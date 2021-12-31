@@ -1,5 +1,4 @@
 import { SerieDataCommon, ChartOptions, ContextSource, SerieOptions } from "./types";
-import Plot from "../plot/PlotSkeleton";
 import ChartUtils from "./utils";
 
 export abstract class Chart {
@@ -7,7 +6,6 @@ export abstract class Chart {
     context: CanvasRenderingContext2D;
     seriesData: SerieDataCommon[];
     chartOptions: ChartOptions;
-    plot: Plot;
 
     constructor(source: ContextSource) {
         let analyzedElement = source;
@@ -29,8 +27,6 @@ export abstract class Chart {
             showLabels: true,
         };
         this.seriesData = [];
-
-        this.plot = new Plot(this.context);
     }
 
     public setChartOptions(options: Partial<ChartOptions>): void {
