@@ -4,41 +4,31 @@ import { FrameRect, TickInfo } from "./types";
 import { getTickInfo } from "./utils";
 
 export default class PlotKit {
+    LABELS_SPACE_MULTIPIER = 0.05;
     ctx: CanvasRenderingContext2D;
-    strokeFrameForTestEnabled = true;
 
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
     }
 
+    // Ideally this should return Array of FrameRect for each frame.
     public prepareChartForDrawing(chartOptions: ChartOptions, series: SerieDataCommon[]): FrameRect {
         const { ctx } = this;
         const { width, height } = ctx.canvas;
         this.ctx.clearRect(0, 0, width, height);
 
         let contentFrame = this.getContentFrame();
-        this.strokeFrameForTest(contentFrame, 'blue');
+        this.strokeFrame(contentFrame, 'gray', 3);
+
         if (chartOptions.showTitle && chartOptions.title)
             contentFrame = this.drawTitle(chartOptions.title, contentFrame);
         if (chartOptions.showLegend)
             contentFrame = this.drawLegend(contentFrame, series);
-        this.strokeFrameForTest(contentFrame, 'yellow');
         return contentFrame;
     }
 
-    
     public drawLabels(frame: FrameRect): FrameRect {
-        const LABELS_SPACE_MULTIPIER = 0.05;
-        const { x, w } = frame;
-        const h = frame.h * LABELS_SPACE_MULTIPIER;
-        const y = frame.y + frame.h - h;
-        const labelsFrame = {
-            x,
-            y,
-            w,
-            h
-        };
-        this.strokeFrameForTest(labelsFrame, 'pink');
+        const h = frame.h * this.LABELS_SPACE_MULTIPIER;
         return {
             x: frame.x,
             y: frame.y,
@@ -55,7 +45,7 @@ export default class PlotKit {
         const singleH = frame.h / (tickCount + 1);
         ctx.lineWidth = 1;
         ctx.strokeStyle = 'gray';
-        for (let i = 1; i <= tickCount; i++) {
+        for (let i = 1; i <= tickCount + 1; i++) {
             const y = frame.y + singleH * i;
             const val = String((tickCount + 1 - i) * tickHeight);
             const { width } = this.ctx.measureText(val);
@@ -72,12 +62,11 @@ export default class PlotKit {
         };
     }
 
-    private strokeFrameForTest(frame: FrameRect, color: string): void {
-        if (this.strokeFrameForTestEnabled) {
-            this.ctx.strokeStyle = color;
-            this.ctx.strokeRect(frame.x, frame.y, frame.w, frame.h);
-            this.ctx.strokeStyle = 'black';
-        }
+    private strokeFrame(frame: FrameRect, color: string, width?: number): void {
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = width ?? 1;
+        this.ctx.strokeRect(frame.x, frame.y, frame.w, frame.h);
+        this.ctx.strokeStyle = 'black';
     }
 
     private getContentFrame(): FrameRect {
@@ -88,17 +77,6 @@ export default class PlotKit {
             y: padding,
             w: width - 2 * padding,
             h: height - 2 * padding,
-        };
-    }
-
-    private getTitleFrame(contentFrame: FrameRect): FrameRect {
-        const FRAME_HEIGHT_DIVIDER = 10;
-        const newH = Math.floor(contentFrame.h / FRAME_HEIGHT_DIVIDER);
-        return {
-            x: contentFrame.x,
-            y: contentFrame.y,
-            h: newH,
-            w: contentFrame.w
         };
     }
 
@@ -133,8 +111,19 @@ export default class PlotKit {
         const textPositionX = x + w / 2 - textWidth / 2;
         const textPositionY = y + h / 2 + textHeight / 2;
         ctx.fillText(title, textPositionX, textPositionY, w);
-        this.strokeFrameForTest(titleFrame, 'red');
+        this.strokeFrame(titleFrame, 'gray', 1);
         return this.getRemainingContentFrame(contentFrame, titleFrame);
+    }
+
+    private getTitleFrame(contentFrame: FrameRect): FrameRect {
+        const FRAME_HEIGHT_DIVIDER = 10;
+        const newH = Math.floor(contentFrame.h / FRAME_HEIGHT_DIVIDER);
+        return {
+            x: contentFrame.x,
+            y: contentFrame.y,
+            h: newH,
+            w: contentFrame.w
+        };
     }
 
     private drawSingleSerieLegend(frame: FrameRect, serie: SerieDataCommon): void {
@@ -153,7 +142,6 @@ export default class PlotKit {
 
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 3;
-        this.strokeFrameForTest(frame, options.color);
         const orienationLen = Math.min(frame.w, frame.h);
         const boxEdgeWidth = orienationLen * PADDING_MULTIPIER;
         const newFrame = {
@@ -177,7 +165,6 @@ export default class PlotKit {
     private drawLegend(contentFrame: FrameRect, series: SerieDataCommon[]): FrameRect {
         const legendFrame = this.getLegendFrame(contentFrame);
         const PADDING_MULTIPIER = 0.75;
-        this.strokeFrameForTest(legendFrame, 'green');
         const newW = legendFrame.w * PADDING_MULTIPIER;
         legendFrame.x = legendFrame.x + (legendFrame.w - newW) / 2;
         legendFrame.w = newW;
