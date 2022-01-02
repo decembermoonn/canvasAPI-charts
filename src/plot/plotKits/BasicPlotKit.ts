@@ -3,9 +3,13 @@ import { FrameRect, TickInfo } from "../types";
 import { applyShapeOrColor, getTickInfo } from "../utils";
 
 export default class BasicPlotKit {
+    readonly CHART_BORDER_COLOR = '#202020';
+    readonly DIVIDER_LINE_COLOR = '#484848';
+    readonly HORIZONTAL_LINE_COLOR = '#808080';
+
     readonly TITLE_AREA_MULTIPIER = 0.1;
     readonly LEGEND_AREA_MULTIPIER = 0.1;
-    readonly LEGEND_PADDING_MULTIPIER = 0.75;
+    readonly LEGEND_PADDING_MULTIPIER = 1;
     readonly SERIE_LEGEND_PER_LEVEL = 5;
     readonly SERIE_PADDING_MULTIPIER = 0.6;
     readonly MOST_TICKS = 10;
@@ -22,7 +26,7 @@ export default class BasicPlotKit {
 
         const frames: FrameRect[] = [];
         let emptyFrame = this.getFrame(0, 0, width, height, 'content');
-        this.strokeFrame(emptyFrame, 'gray', 3);
+        this.strokeFrame(emptyFrame, this.DIVIDER_LINE_COLOR, 5);
 
         if (chartOptions.showTitle && chartOptions.title) {
             const titleFrame = this.getTitleFrame(emptyFrame);
@@ -80,7 +84,7 @@ export default class BasicPlotKit {
         const { tickCount, tickHeight } = getTickInfo(max, this.MOST_TICKS);
         const singleH = frame.h / (tickCount + 1);
         ctx.lineWidth = 1;
-        ctx.strokeStyle = 'gray';
+        ctx.strokeStyle = this.HORIZONTAL_LINE_COLOR;
         for (let i = 1; i <= tickCount + 1; i++) {
             const y = frame.y + singleH * i;
             const val = String((tickCount + 1 - i) * tickHeight);
@@ -108,17 +112,15 @@ export default class BasicPlotKit {
         const textPositionX = x + w / 2 - textWidth / 2;
         const textPositionY = y + h / 2 + textHeight / 2;
         ctx.fillText(title, textPositionX, textPositionY, w);
-        this.strokeFrame(titleFrame, 'gray', 1);
+        this.strokeFrame(titleFrame, this.DIVIDER_LINE_COLOR, 1);
     }
 
     private drawLegend(series: SerieDataCommon[], legendFrame: FrameRect): void {
-        const newW = legendFrame.w * this.LEGEND_PADDING_MULTIPIER;
-        legendFrame.x = legendFrame.x + (legendFrame.w - newW) / 2;
-        legendFrame.w = newW;
-
+        this.strokeFrame(legendFrame, this.DIVIDER_LINE_COLOR, 1);
         const levels = Math.ceil(series.length / this.SERIE_LEGEND_PER_LEVEL);
         const frameW = legendFrame.w / Math.min(series.length, this.SERIE_LEGEND_PER_LEVEL);
         const frameH = legendFrame.h / levels;
+
         for (let i = 0; i < series.length; i++) {
             this.drawSingleSerieLegend({
                 x: legendFrame.x + frameW * (i % this.SERIE_LEGEND_PER_LEVEL),
@@ -129,30 +131,36 @@ export default class BasicPlotKit {
         }
     }
 
-    private drawSingleSerieLegend(frame: FrameRect, serie: SerieDataCommon): void {
+    protected drawSingleSerieLegend(frame: FrameRect, serie: SerieDataCommon): void {
         const { ctx } = this;
         const { options, name } = serie;
+
+        const sEdgeOuterBox = Math.min(frame.w, frame.h);
+        const sEdgeInnerBox = sEdgeOuterBox * this.SERIE_PADDING_MULTIPIER;
+        const sPadding = (sEdgeOuterBox - sEdgeInnerBox) / 2;
+
+        ctx.font = `${Math.floor(sEdgeOuterBox / 3)}px sans-serif`;
+        const { width, actualBoundingBoxAscent } = ctx.measureText(name);
+        const wboxAndText = sEdgeOuterBox + width - sPadding;
+
+        const boxFrame = {
+            x: frame.x + (frame.w - wboxAndText) / 2,
+            y: frame.y + sPadding,
+            w: sEdgeInnerBox,
+            h: sEdgeInnerBox
+        };
+        const textCoords = {
+            x: boxFrame.x + sEdgeInnerBox + sPadding,
+            y: boxFrame.y + (sEdgeInnerBox / 2) + (actualBoundingBoxAscent / 2),
+            maxW: wboxAndText - boxFrame.w - sPadding
+        };
 
         applyShapeOrColor(ctx, options.shape, options.color);
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 3;
-        const orienationLen = Math.min(frame.w, frame.h);
-        const boxEdgeWidth = orienationLen * this.SERIE_PADDING_MULTIPIER;
-        const newFrame = {
-            x: frame.x + (orienationLen - boxEdgeWidth) / 2,
-            y: frame.y + (orienationLen - boxEdgeWidth) / 2,
-            w: boxEdgeWidth,
-            h: boxEdgeWidth,
-        };
-        ctx.fillRect(newFrame.x, newFrame.y, newFrame.w, newFrame.h);
-        ctx.strokeRect(newFrame.x, newFrame.y, newFrame.w, newFrame.h);
-        const center = {
-            x: frame.x + orienationLen,
-            y: frame.y + orienationLen / 2,
-        };
+        ctx.fillRect(boxFrame.x, boxFrame.y, boxFrame.w, boxFrame.h);
+        ctx.strokeRect(boxFrame.x, boxFrame.y, boxFrame.w, boxFrame.h);
         ctx.fillStyle = 'black';
-        ctx.font = `${Math.floor(orienationLen / 4)}px sans-serif`;
-        const { actualBoundingBoxAscent } = ctx.measureText(name);
-        ctx.fillText(name, center.x, center.y + actualBoundingBoxAscent / 2, frame.w - orienationLen);
+        ctx.fillText(name, textCoords.x, textCoords.y, textCoords.maxW);
     }
 }

@@ -1,16 +1,16 @@
 import { ChartOptions, MultiSeriePointData } from "../model/types";
-import BasicPlotKit from "./plotKits/BasicPlotKit";
+import LinePlotKit from "./plotKits/LinePlotKit";
 
 export default class PointPlot {
     readonly ctx: CanvasRenderingContext2D;
-    readonly plotKit: BasicPlotKit;
+    readonly plotKit: LinePlotKit;
 
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
-        this.plotKit = new BasicPlotKit(ctx);
+        this.plotKit = new LinePlotKit(ctx);
     }
 
     drawPoints(series: MultiSeriePointData[], chartOptions: ChartOptions): void {
-        console.log(series);
+        const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
     }
 }
