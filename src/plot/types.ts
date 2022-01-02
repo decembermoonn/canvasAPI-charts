@@ -6,6 +6,7 @@ export interface TickInfo {
 }
 
 export interface FrameRect {
+    id?: string;
     x: number;
     y: number;
     w: number;

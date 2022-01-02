@@ -1,23 +1,22 @@
 import { ChartOptions, MultiSerieData, SerieOptions } from "../model/types";
-import Plot from "./Plot";
+import BarPlotKit from "./plotKits/BarPlotKit";
 import { applyShapeOrColor } from "./utils";
 
-export default class BarPlot extends Plot {
-    COL_SPACE_SIZE = 0.75;
-    VALUE_BOTTOM_PADDING = 4;
+export default class BarPlot {
+    readonly ctx: CanvasRenderingContext2D;
+    readonly plotKit: BarPlotKit;
+    readonly COL_SPACE_SIZE = 0.75;
+    readonly VALUE_BOTTOM_PADDING = 4;
 
     constructor(ctx: CanvasRenderingContext2D) {
-        super(ctx);
+        this.ctx = ctx;
+        this.plotKit = new BarPlotKit(ctx);
     }
 
     drawBars(labels: string[], series: MultiSerieData[], chartOptions: ChartOptions): void {
-        let plotFrame = this.plotKit.prepareChartForDrawing(chartOptions, series);
-        let labelFrameH = 0;
-        if (chartOptions.showLabels) {
-            const befFrameHeight = plotFrame.h;
-            plotFrame = this.plotKit.drawLabels(plotFrame);
-            labelFrameH = Math.floor(befFrameHeight - plotFrame.h);
-        }
+        const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
+        const plotFrame = frames.find(frame => frame.id === 'content');
+        const labelFrame = frames.find(frame => frame.id === 'labels');
         const { tickCount, tickHeight } = this.plotKit.drawGridHorizontalLines(series, plotFrame);
         const hSpaceBetweenTicks = plotFrame.h / ((tickCount + 1) * tickHeight);
 
@@ -38,11 +37,11 @@ export default class BarPlot extends Plot {
         for (let a = 0; a < barAreas; a++) {
             const xAreaBeginning = plotFrame.x + a * barAreaWidth + paddingWidth;
             if (chartOptions.showLabels) {
-                this.ctx.font = `${labelFrameH}px sans-serif`;
+                this.ctx.font = `${labelFrame.h}px sans-serif`;
                 this.ctx.fillStyle = 'black';
                 const { width } = this.ctx.measureText(labels[a]);
                 const xLabel = xAreaBeginning + (barAreaWidthPadded / 2) - width / 2;
-                const yLabel = plotFrame.y + plotFrame.h + labelFrameH * 0.8;
+                const yLabel = plotFrame.y + plotFrame.h + labelFrame.h * 0.8;
                 this.ctx.fillText(labels[a], xLabel, yLabel, barAreaWidth);
                 this.ctx.font = `${pxFontForValue}px sans-serif`;
             }

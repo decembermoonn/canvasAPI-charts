@@ -1,18 +1,22 @@
 import { ChartOptions, SingleSerieData } from "../model/types";
-import Plot from "./Plot";
+import BasicPlotKit from "./plotKits/BasicPlotKit";
 import { PiePartData } from "./types";
 import { applyShapeOrColor } from "./utils";
 
-export default class PiePlot extends Plot {
-    RADIUS_DIVIDER = 2.5;
+export default class PiePlot {
+    readonly ctx: CanvasRenderingContext2D;
+    readonly plotKit: BasicPlotKit;
+    readonly RADIUS_DIVIDER = 2.5;
 
     constructor(ctx: CanvasRenderingContext2D) {
-        super(ctx);
+        this.ctx = ctx;
+        this.plotKit = new BasicPlotKit(ctx);
     }
 
     drawPie(series: SingleSerieData[], chartOptions: ChartOptions): void {
         const { ctx } = this;
-        const plotFrame = this.plotKit.prepareChartForDrawing(chartOptions, series);
+        const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
+        const plotFrame = frames.find(frame => frame.id === 'content');
         const entries = this.mapSeriesToPiePartData(series);
 
         const pieRadius = Math.min(plotFrame.w, plotFrame.h) / this.RADIUS_DIVIDER;
