@@ -1,4 +1,4 @@
-import { ChartOptions, SingleSerieData } from "../model/types";
+import { ChartOptions, SerieOptionsArea, SingleSerieData } from "../model/types";
 import BasicPlotKit from "./plotKits/BasicPlotKit";
 import { PiePartData } from "./types";
 import { applyShapeOrColor } from "./utils";
@@ -46,8 +46,8 @@ export default class PiePlot {
         return series.map(serie => ({
             radians: serie.value * 2 * Math.PI / total,
             color: serie.options.color,
-            borderWidth: serie.options.borderWidth,
-            shape: serie.options.shape,
+            borderWidth: (serie.options as SerieOptionsArea).borderWidth,
+            shape: (serie.options as SerieOptionsArea).shape,
             showValue: serie.options.showValue,
             value: serie.value
         }));

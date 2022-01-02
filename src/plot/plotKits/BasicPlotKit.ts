@@ -1,5 +1,5 @@
-import { ChartOptions, MultiSerieData, SerieDataCommon } from "../../model/types";
-import { FrameRect, TickInfo } from "../types";
+import { ChartOptions, MultiSerieData, SerieDataCommon, SerieOptionsArea } from "../../model/types";
+import { BoxFrameAndTextCoords, FrameRect, TickInfo } from "../types";
 import { applyShapeOrColor, getTickInfo } from "../utils";
 
 export default class BasicPlotKit {
@@ -132,8 +132,13 @@ export default class BasicPlotKit {
     }
 
     protected drawSingleSerieLegend(frame: FrameRect, serie: SerieDataCommon): void {
+        const boxFrameAndTextCoords = this.prepareSingleSerieLegend(frame, serie);
+        this.performDrawSingleSerieLegend(boxFrameAndTextCoords, serie);
+    }
+
+    protected prepareSingleSerieLegend(frame: FrameRect, serie: SerieDataCommon): BoxFrameAndTextCoords {
         const { ctx } = this;
-        const { options, name } = serie;
+        const { name } = serie;
 
         const sEdgeOuterBox = Math.min(frame.w, frame.h);
         const sEdgeInnerBox = sEdgeOuterBox * this.SERIE_PADDING_MULTIPIER;
@@ -154,7 +159,17 @@ export default class BasicPlotKit {
             y: boxFrame.y + (sEdgeInnerBox / 2) + (actualBoundingBoxAscent / 2),
             maxW: wboxAndText - boxFrame.w - sPadding
         };
+        return {
+            boxFrame,
+            textCoords,
+        };
+    }
 
+    protected performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
+        const { ctx } = this;
+        const { name } = serie;
+        const options = serie.options as SerieOptionsArea;
+        const { boxFrame, textCoords } = boxFrameAndTextCoords;
         applyShapeOrColor(ctx, options.shape, options.color);
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 3;

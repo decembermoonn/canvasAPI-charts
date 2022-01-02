@@ -1,6 +1,5 @@
-import { SerieDataCommon } from "../../model/types";
-import { FrameRect } from "../types";
-import { applyShapeOrColor } from "../utils";
+import { Dash, Point, SerieDataCommon, SerieOptionsLine } from "../../model/types";
+import { BoxFrameAndTextCoords } from "../types";
 import BasicPlotKit from "./BasicPlotKit";
 
 export default class LinePlotKit extends BasicPlotKit {
@@ -9,30 +8,59 @@ export default class LinePlotKit extends BasicPlotKit {
         super(ctx);
     }
 
-    protected override drawSingleSerieLegend(frame: FrameRect, serie: SerieDataCommon): void {
+    protected override performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
         const { ctx } = this;
         const { options, name } = serie;
-
-        applyShapeOrColor(ctx, options.shape, options.color);
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 3;
-        const orienationLen = Math.min(frame.w, frame.h);
-        const boxEdgeWidth = orienationLen * this.SERIE_PADDING_MULTIPIER;
-        const newFrame = {
-            x: frame.x + (orienationLen - boxEdgeWidth) / 2,
-            y: frame.y + (orienationLen - boxEdgeWidth) / 2,
-            w: boxEdgeWidth,
-            h: boxEdgeWidth,
+        const { boxFrame, textCoords } = boxFrameAndTextCoords;
+        const yBoxFrameCenter = boxFrame.y + boxFrame.h / 2;
+        const p1: Point = {
+            x: boxFrame.x,
+            y: yBoxFrameCenter,
         };
-        ctx.fillRect(newFrame.x, newFrame.y, newFrame.w, newFrame.h);
-        ctx.strokeRect(newFrame.x, newFrame.y, newFrame.w, newFrame.h);
-        const center = {
-            x: frame.x + orienationLen,
-            y: frame.y + orienationLen / 2,
+        const p2: Point = {
+            x: boxFrame.x + boxFrame.w,
+            y: yBoxFrameCenter,
         };
+        this.drawDashedLine(p1, p2, options as SerieOptionsLine);
         ctx.fillStyle = 'black';
-        ctx.font = `${Math.floor(orienationLen / 4)}px sans-serif`;
-        const { actualBoundingBoxAscent } = ctx.measureText(name);
-        ctx.fillText(name, center.x, center.y + actualBoundingBoxAscent / 2, frame.w - orienationLen);
+        ctx.fillText(name, textCoords.x, textCoords.y, textCoords.maxW);
+    }
+
+    public drawDashedLine(p1: Point, p2: Point, options: SerieOptionsLine): void {
+        const { ctx } = this;
+        let { dash } = options;
+        const { color, dashWidth } = options;
+
+        if (typeof dash === 'string')
+            dash = this.dashStringToArray(dash);
+        ctx.setLineDash(dash ?? []);
+        ctx.strokeStyle = color ?? 'black';
+        ctx.lineWidth = dashWidth ?? 1;
+
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+    }
+
+    private dashStringToArray(dash: Dash): number[] {
+        switch (dash) {
+            case 'l':
+                return [];
+            case 'p':
+                return [1, 1];
+            case 'ls':
+                return [10, 10];
+            case 'lls':
+                return [20, 5];
+            case 'lp':
+                return [15, 3, 3, 3];
+            case 'lppp':
+                return [20, 3, 3, 3, 3, 3, 3, 3];
+            case 'lpsp':
+                return [12, 3, 3];
+            default:
+                return [];
+        }
     }
 }

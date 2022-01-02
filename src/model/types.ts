@@ -7,17 +7,29 @@ export interface ChartOptions {
     showLabels?: boolean;
 }
 
-export interface SerieOptions {
+export interface SerieOptionsCommon {
     color: string;
     showValue: boolean;
-    borderWidth: number;
     showOnLegend: boolean;
+}
+
+type DashString = 'l' | 'p' | 'ls' | 'lls' | 'lp' | 'lppp' | 'lpsp';
+
+export type Dash = number[] | DashString;
+
+export interface SerieOptionsLine extends SerieOptionsCommon {
+    dash: Dash;
+    dashWidth: number;
+}
+
+export interface SerieOptionsArea extends SerieOptionsCommon {
     shape?: Parameters<typeof draw>[0];
+    borderWidth: number;
 }
 
 export interface SerieDataCommon {
     name: string;
-    options: SerieOptions;
+    options: SerieOptionsLine | SerieOptionsArea;
 }
 
 export interface SingleSerieData extends SerieDataCommon {

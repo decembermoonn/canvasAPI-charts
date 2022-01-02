@@ -2,7 +2,7 @@ import { ChartOptions, SerieDataCommon } from "../../model/types";
 import { FrameRect } from "../types";
 import BasicPlotKit from "./BasicPlotKit";
 
-export default class BarPlotKit extends BasicPlotKit {
+export default class AreaPlotKit extends BasicPlotKit {
     readonly LABELS_AREA_MULTIPIER = 0.05;
 
     constructor(ctx: CanvasRenderingContext2D) {
@@ -14,7 +14,6 @@ export default class BarPlotKit extends BasicPlotKit {
         if (chartOptions.showLabels) {
             const emptyFrame = frames.find(frame => frame.id === 'content');
             const labelsFrame = this.getLabelsFrame(emptyFrame);
-            console.log(labelsFrame, emptyFrame);
             const newEmptyFrame = this.cutFrames(emptyFrame, labelsFrame);
             emptyFrame.x = newEmptyFrame.x;
             emptyFrame.y = newEmptyFrame.y;

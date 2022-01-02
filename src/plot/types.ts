@@ -1,4 +1,4 @@
-import { SerieOptions } from "../model/types";
+import { Point, SerieOptionsArea } from "../model/types";
 
 export interface TickInfo {
     tickHeight: number;
@@ -13,4 +13,9 @@ export interface FrameRect {
     h: number;
 }
 
-export type PiePartData = Omit<SerieOptions, 'showOnLegend'> & { radians: number, value: number };
+export type PiePartData = Omit<SerieOptionsArea, 'showOnLegend'> & { radians: number, value: number };
+
+export interface BoxFrameAndTextCoords {
+    boxFrame: FrameRect;
+    textCoords: Point & { maxW: number };
+}

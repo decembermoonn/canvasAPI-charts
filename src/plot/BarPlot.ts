@@ -1,16 +1,16 @@
-import { ChartOptions, MultiSerieData, SerieOptions } from "../model/types";
-import BarPlotKit from "./plotKits/BarPlotKit";
+import { ChartOptions, MultiSerieData, SerieOptionsArea } from "../model/types";
+import AreaPlotKit from "./plotKits/AreaPlotKit";
 import { applyShapeOrColor } from "./utils";
 
 export default class BarPlot {
     readonly ctx: CanvasRenderingContext2D;
-    readonly plotKit: BarPlotKit;
+    readonly plotKit: AreaPlotKit;
     readonly COL_SPACE_SIZE = 0.75;
     readonly VALUE_BOTTOM_PADDING = 4;
 
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
-        this.plotKit = new BarPlotKit(ctx);
+        this.plotKit = new AreaPlotKit(ctx);
     }
 
     drawBars(labels: string[], series: MultiSerieData[], chartOptions: ChartOptions): void {
@@ -54,14 +54,14 @@ export default class BarPlot {
                     yColumn,
                     oneColumnWidth,
                     hColumn,
-                    series[s].options,
+                    series[s].options as SerieOptionsArea,
                     series[s].values[a]
                 );
             }
         }
     }
 
-    private drawBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptions, value: number): void {
+    private drawBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptionsArea, value: number): void {
         this.fillBar(xpos, ypos, width, height, options);
         const { showValue, borderWidth } = options;
         if (borderWidth)
@@ -70,7 +70,7 @@ export default class BarPlot {
             this.addBarValue(xpos, ypos, width, value);
     }
 
-    private fillBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptions): void {
+    private fillBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptionsArea): void {
         const { color, shape } = options;
         applyShapeOrColor(this.ctx, shape, color);
         this.ctx.fillRect(xpos, ypos, width, height);

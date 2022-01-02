@@ -1,5 +1,5 @@
 import { draw } from "patternomaly";
-import { SerieOptions } from "../model/types";
+import { SerieOptionsArea } from "../model/types";
 import { TickInfo } from "./types";
 
 /**
@@ -41,7 +41,7 @@ export function getTickInfo(largest: number, mostTicks: number): TickInfo {
     };
 }
 
-export function applyShapeOrColor(ctx: CanvasRenderingContext2D, shape: SerieOptions['shape'], color: string): void {
+export function applyShapeOrColor(ctx: CanvasRenderingContext2D, shape: SerieOptionsArea['shape'], color: string): void {
     ctx.fillStyle = color;
     if (shape != undefined) {
         try {
