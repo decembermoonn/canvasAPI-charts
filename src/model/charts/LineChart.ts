@@ -1,4 +1,4 @@
-import { ContextSource } from "./types";
+import { ContextSource } from "../types";
 import { PointChart } from "./PointChart";
 
 export class LineChart extends PointChart {

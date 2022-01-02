@@ -1,8 +1,8 @@
-import { MultiSeriePointData, ContextSource, Point } from "./types";
-import { Chart } from "./Chart";
-import PointPlot from "../plot/PointPlot";
+import { MultiSeriePointData, ContextSource, Point } from "../types";
+import PointPlot from "../../plot/PointPlot";
+import { MultiChart } from "../MultiChart";
 
-export class PointChart extends Chart {
+export class PointChart extends MultiChart {
 
     seriesData: MultiSeriePointData[];
     plot: PointPlot;
@@ -50,7 +50,8 @@ export class PointChart extends Chart {
                 color: Math.floor(Math.random() * 16777215).toString(16),
                 showValue: false,
                 showOnLegend: false,
-                borderWidth: 0,
+                dash: [],
+                dashWidth: 1,
             }
         };
     }

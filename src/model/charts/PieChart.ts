@@ -1,7 +1,7 @@
-import { SingleSerieData, ContextSource } from "./types";
-import { Chart } from "./Chart";
-import ChartUtils from "./utils";
-import PiePlot from "../plot/PiePlot";
+import { SingleSerieData, ContextSource } from "../types";
+import { Chart } from "../Chart";
+import ChartUtils from "../utils";
+import PiePlot from "../../plot/PiePlot";
 
 export class PieChart extends Chart {
 
