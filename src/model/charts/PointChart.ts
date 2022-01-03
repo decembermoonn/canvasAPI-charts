@@ -1,12 +1,15 @@
-import { MultiSeriePointData, ContextSource, Point } from "./types";
-import { Chart } from "./Chart";
+import { MultiSeriePointData, ContextSource, Point } from "../types";
+import PointPlot from "../../plot/LinePlot";
+import { MultiChart } from "../MultiChart";
 
-export class PointChart extends Chart {
+export class PointChart extends MultiChart {
 
     seriesData: MultiSeriePointData[];
+    plot: PointPlot;
 
     constructor(source: ContextSource) {
         super(source);
+        this.plot = new PointPlot(this.context);
     }
 
     public set points(points: Point[]) {
@@ -47,13 +50,14 @@ export class PointChart extends Chart {
                 color: Math.floor(Math.random() * 16777215).toString(16),
                 showValue: false,
                 showOnLegend: false,
-                edgeThickness: 0,
+                dash: [],
+                dashWidth: 1,
             }
         };
     }
 
     public draw(): void {
-        this.seriesData.forEach((data) => data.points.sort((p1, p2) => (p2.x - p1.x)));
-        throw Error("Not implemented yet");
+        this.seriesData.forEach((data) => data.points.sort((p1, p2) => (p1.x - p2.x)));
+        this.plot.drawPoints(this.seriesData, this.chartOptions);
     }
 }

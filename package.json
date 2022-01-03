@@ -1,14 +1,17 @@
 {
-  "name": "@brz/webgl-chart",
-  "version": "0.1.0",
-  "description": "Library for plotting using WebGL",
-  "private": true,
+  "name": "canvas2d-charts",
+  "version": "0.1.1",
+  "description": "Library for plotting using Canvas2D",
+  "private": false,
   "scripts": {
     "build": "npx webpack --config webpack.config.js"
   },
+  "files": [
+    "dist"  
+  ],
   "exports": "./src/bundle.js",
   "keywords": [
-    "webgl",
+    "canvas2d",
     "chart",
     "plot"
   ],

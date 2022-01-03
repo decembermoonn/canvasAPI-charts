@@ -30,21 +30,21 @@ In order to create chart use:
 Drawing(type, context);
 ```
 Where:
-* type - valid type of chart.  Might be one of::
+* `type` - valid type of chart.  Might be one of::
     * pie
     * bar
     * histogram
     * point
     * line
     * area
-* context - Canvas2DRenderingContext, HTMLCanvasElement or id of HTMLCanvasElement.
+* `context` - Canvas2DRenderingContext, HTMLCanvasElement or id of HTMLCanvasElement.
 
 ---
 
 Charts can be customized to fit Your needs. Following secion describes available customization.
 
 ## Supplying OX data:
-Data may be array of strings or even array of number arrays depending on type of chart. Following section specifies type of OX data for every chart.
+Following section specifies type of OX data for every chart.
 
 ### Pie, Bar, Histogram:
 * Type: ***string[]***
@@ -59,7 +59,7 @@ Data may be array of strings or even array of number arrays depending on type of
     drawing.X = [[1,2,3],[2,3,4]]
     ```
 ## Supplying OY data:
-Data for OY axis should be adequate to number of used series, etc. Following section specifies type of OY data for every chart:
+Following section specifies type of OY data for every chart:
 
 ### Pie:
 * Type: ***number[]***
@@ -73,53 +73,57 @@ Data for OY axis should be adequate to number of used series, etc. Following sec
 * Example:
     ```
     drawing.Y = [[1,2,3],[2,3,4],[8,9,9]]
-* Array should contain arrays of numbers. Each array coresponds for each serie. 
+* Array should contain arrays of numbers. Each array coresponds to each serie. 
 
 ## Setting chart options:
-Chart might be configured via following method:
+Chart might be configured with following method:
 ```js
 drawing.setChartOptions({
     title: string,
     showTitle: boolean,
     showLegend: boolean,
+    showLabels: boolean
 });
 ```
 Where object might consist of:
 * `title` - title of chart
 * `showTitle` - flag indicating whether title should be shown
 * `showLegend` - flag indicating whether legend should be shown
+* `showLabels` - ***optional*** flag inidcating wherther OX labels should be visible (applies only for bar and histogram charts)
 
 ## Setting serie options:
 Each serie might be configured via following method:
 ```js
 drawing.setSerieOptions({
-        edgeThickness: 6,
-        color: 'red',
-        shape: 'diamond',
+        color: string,
+        showValue: boolean,
+        borderWidth: number,
+        showOnLegend: boolean,
+        shape: string
     }, serieNamesArray);
 ```
 Where object might consist of:
-* `edgeThickness` - width of serie stroke line
 * `color` - color of serie
-* `shape` - pattern of serie which might be one of [described there](https://github.com/ashiguruma/patternomaly/blob/5ca857ae7888aacaac9ecfc43f6b3e9859e40645/README.md)
+* `showValue` - flag indicating whether value of serie should be visible
+* `borderWidth` - width of serie stroke line
 * `showOnLegend` - flag indicating whether serie should be visible on legend
-* `showLabels` - flag indicating whether serie values labels should be visible on chart 
+* `shape` - pattern of serie which might be one of [those described there](https://github.com/ashiguruma/patternomaly/blob/5ca857ae7888aacaac9ecfc43f6b3e9859e40645/README.md)
 
 And `serieNamesArray`:
-* May be ommited, which will cause applying settings to all specified series
-* May be ***string[]*** with names of series which settings should be applied to.
+* May be ommited, which will cause applying settings to all series
+* May be ***string[]*** of names of series which settings should be applied to.
 
 Upon supplying charts with OX and OY data series are created with default names:
-* In case of *Pie Chart* serie names are the same as passed as OX dta
-* In case of other charts serie names are named *serie<number>* where number is incremented from 1 to *n* for *n* series. For example:
+* In case of *Pie Chart* serie names are the same as those supplied as OX data
+* In case of other charts serie names are named with following convention:
     ```js
-    ["serie1", "serie2", "serie3"]
+    ["serie0", "serie1", "serie2", ...]
     ```
 
 ---
 
 ## Drawing
-After specifying data, chart options and series options chart might be drawn via: 
+After configuration chart might be drawn via: 
 ```js
 drawing.draw();
 ```

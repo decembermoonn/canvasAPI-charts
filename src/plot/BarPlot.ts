@@ -1,91 +1,104 @@
-import { ChartOptions, MultiSerieData, SerieOptions } from "../model/types";
-import PlotSkeleton from "./PlotSkeleton";
-import { draw } from 'patternomaly';
+import { ChartOptions, MultiSerieData, SerieOptionsArea } from "../model/types";
+import AreaPlotKit from "./plotKits/AreaPlotKit";
+import { applyShapeOrColor } from "./utils";
 
-export default class BarPlot extends PlotSkeleton {
-    constructor(skeleton: PlotSkeleton) {
-        super(skeleton.ctx);
-    }
+export default class BarPlot {
+    readonly ctx: CanvasRenderingContext2D;
+    readonly plotKit: AreaPlotKit;
+    readonly COL_SPACE_SIZE = 0.75;
+    readonly VALUE_BOTTOM_PADDING = 4;
 
-    fillBar(xpos: number, ypos: number, width: number, height: number, color: string, borderWidth?: number, shape?: SerieOptions['shape']): void {
-        this.ctx.fillStyle = color;
-        if (shape != undefined) {
-            try {
-                this.ctx.fillStyle = draw(shape, color, 'black');
-            } catch {
-                console.warn(`${shape} is invalid shape. See documentation.`);
-            }
-        }
-        this.ctx.fillRect(xpos, ypos, width, height);
-        if (borderWidth) {
-            this.ctx.lineWidth = height ? borderWidth : 1;
-            this.strokeBar(xpos, ypos, width, height);
-        }
-    }
-
-    strokeBar(xpos: number, ypos: number, width: number, height: number): void {
-        const { ctx } = this;
-        ctx.beginPath();
-        ctx.moveTo(xpos, ypos + height);
-        ctx.lineTo(xpos, ypos);
-        ctx.lineTo(xpos + width, ypos);
-        ctx.lineTo(xpos + width, ypos + height);
-        ctx.strokeStyle = 'black';
-        ctx.stroke();
+    constructor(ctx: CanvasRenderingContext2D) {
+        this.ctx = ctx;
+        this.plotKit = new AreaPlotKit(ctx);
     }
 
     drawBars(labels: string[], series: MultiSerieData[], chartOptions: ChartOptions): void {
-        const COL_SPACE_SIZE = 0.75;
-        let plotFrame = this.prepareChartForDrawing(chartOptions, series);
-        let labelFrameH = 0;
-        if (chartOptions.showLabels) {
-            const befFrameHeight = plotFrame.h;
-            plotFrame = this.drawLabels(plotFrame);
-            labelFrameH = befFrameHeight - plotFrame.h;
-        }
-        const { tickCount, tickHeight } = this.drawGridHorizontalLines(series, plotFrame);
+        const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
+        let plotFrame = frames.find(frame => frame.id === 'content');
+        const labelFrame = frames.find(frame => frame.id === 'labels');
+        const maxValueFromSeries = Math.max(...series.map(serie => Math.max(...serie.values)));
+        const { tickCount, tickHeight, tickFrame } = this.plotKit.drawGridHorizontalLines(plotFrame, 0, maxValueFromSeries);
+        plotFrame = tickFrame;
+        const hSpaceBetweenTicks = plotFrame.h / ((tickCount + 1) * tickHeight);
 
         const serieCount = series.length;
         const barAreas = labels.length;
 
-        // split space for each 'sticked' bars equally
-        const singleW = plotFrame.w / barAreas;
-        const singleWWithPadding = singleW * COL_SPACE_SIZE;
-        const spaceX = (singleW - singleWWithPadding) / 2;
-        const oneColumnWidth = singleWWithPadding / serieCount;
+        const barAreaWidth = plotFrame.w / barAreas;
+        const paddingWidth = barAreaWidth * (1 - this.COL_SPACE_SIZE);
+        const barAreaWidthPadded = barAreaWidth - 2 * paddingWidth;
 
-        if (chartOptions.showLabels) {
-            this.ctx.font = `${Math.floor(labelFrameH)}px sans-serif`;
-            this.ctx.fillStyle = 'black';
-            for (let i = 0; i < labels.length; i++) {
-                const { width } = this.ctx.measureText(labels[i]);
-                const xPos = plotFrame.x + i * singleW + spaceX - width / 2 + singleWWithPadding / 2;
-                this.ctx.fillText(labels[i], xPos, plotFrame.y + plotFrame.h + labelFrameH * 0.8, singleW);
+        const oneColumnWidth = barAreaWidthPadded / serieCount;
+
+        this.ctx.fillStyle = 'black';
+        const yColumnBottom = plotFrame.y + plotFrame.h;
+        const pxFontForValue = Math.floor(oneColumnWidth * 0.5);
+        this.ctx.font = `${pxFontForValue}px sans-serif`;
+
+        for (let a = 0; a < barAreas; a++) {
+            const xAreaBeginning = plotFrame.x + a * barAreaWidth + paddingWidth;
+            if (chartOptions.showLabels) {
+                this.ctx.font = `${labelFrame.h}px sans-serif`;
+                this.ctx.fillStyle = 'black';
+                const { width } = this.ctx.measureText(labels[a]);
+                const xLabel = xAreaBeginning + (barAreaWidthPadded / 2) - width / 2;
+                const yLabel = plotFrame.y + plotFrame.h + labelFrame.h * 0.8;
+                this.ctx.fillText(labels[a], xLabel, yLabel, barAreaWidth);
+                this.ctx.font = `${pxFontForValue}px sans-serif`;
             }
-        }
-        for (let i = 0; i < serieCount; i++) {
-            for (let j = 0; j < barAreas; j++) {
-                const x = (plotFrame.x + j * singleW + spaceX) + (i * oneColumnWidth);
-                const h = series[i].values[j] * plotFrame.h / ((tickCount + 1) * tickHeight);
-                const y = plotFrame.y + plotFrame.h - h;
-                this.fillBar(
-                    x,
-                    y,
+            for (let s = 0; s < serieCount; s++) {
+                const xColumn = xAreaBeginning + s * oneColumnWidth;
+                const hColumn = series[s].values[a] * hSpaceBetweenTicks;
+                const yColumn = yColumnBottom - hColumn;
+                this.drawBar(
+                    xColumn,
+                    yColumn,
                     oneColumnWidth,
-                    h,
-                    series[i].options.color,
-                    series[i].options.edgeThickness,
-                    series[i].options.shape
+                    hColumn,
+                    series[s].options as SerieOptionsArea,
+                    series[s].values[a]
                 );
-                if (series[i].options.showValue) {
-                    const fontSize = Math.floor(oneColumnWidth * 0.5);
-                    const strVal = String(series[i].values[j]);
-                    this.ctx.font = `${fontSize}px sans-serif`;
-                    const { width } = this.ctx.measureText(strVal);
-                    this.ctx.fillStyle = 'black';
-                    this.ctx.fillText(strVal, x + oneColumnWidth / 2 - width / 2, y - 4, oneColumnWidth);
-                }
             }
         }
+    }
+
+    private drawBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptionsArea, value: number): void {
+        this.fillBar(xpos, ypos, width, height, options);
+        const { showValue, borderWidth } = options;
+        if (borderWidth)
+            this.strokeBar(xpos, ypos, width, height, borderWidth);
+        if (showValue)
+            this.addBarValue(xpos, ypos, width, value);
+    }
+
+    private fillBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptionsArea): void {
+        const { color, shape } = options;
+        applyShapeOrColor(this.ctx, shape, color);
+        this.ctx.fillRect(xpos, ypos, width, height);
+    }
+
+    private strokeBar(xpos: number, ypos: number, width: number, height: number, borderWidth: number): void {
+        this.ctx.lineWidth = height ? borderWidth : 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(xpos, ypos + height);
+        this.ctx.lineTo(xpos, ypos);
+        this.ctx.lineTo(xpos + width, ypos);
+        this.ctx.lineTo(xpos + width, ypos + height);
+        this.ctx.strokeStyle = 'black';
+        this.ctx.stroke();
+    }
+
+    private addBarValue(xpos: number, ypos: number, width: number, value: number): void {
+        this.ctx.fillStyle = 'black';
+        const valueString = String(value);
+        const wText = this.ctx.measureText(valueString).width;
+        const xValueCentered = xpos + width / 2 - wText / 2;
+        this.ctx.fillText(
+            valueString,
+            xValueCentered,
+            ypos - this.VALUE_BOTTOM_PADDING,
+            width
+        );
     }
 }

@@ -1,59 +1,43 @@
-import { ChartOptions, SingleSerieData } from "../model/types";
-import PlotSkeleton from "./PlotSkeleton";
+import { ChartOptions, SerieOptionsArea, SingleSerieData } from "../model/types";
+import AreaPlotKit from "./plotKits/AreaPlotKit";
 import { PiePartData } from "./types";
-import { draw } from 'patternomaly';
+import { applyShapeOrColor } from "./utils";
 
-export default class PiePlot extends PlotSkeleton {
+export default class PiePlot {
+    readonly ctx: CanvasRenderingContext2D;
+    readonly plotKit: AreaPlotKit;
+    readonly RADIUS_DIVIDER = 2.5;
 
-    constructor(skeleton: PlotSkeleton) {
-        super(skeleton.ctx);
+    constructor(ctx: CanvasRenderingContext2D) {
+        this.ctx = ctx;
+        this.plotKit = new AreaPlotKit(ctx);
     }
 
     drawPie(series: SingleSerieData[], chartOptions: ChartOptions): void {
-        const RADIUS_DIVIDER = 2.5;
         const { ctx } = this;
-        const plotFrame = this.prepareChartForDrawing(chartOptions, series);
-        const data = this.mapSeriesToPiePartData(series);
-        const radius = Math.min(plotFrame.w, plotFrame.h) / RADIUS_DIVIDER;
-        const center = {
+        const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
+        const plotFrame = frames.find(frame => frame.id === 'content');
+        const entries = this.mapSeriesToPiePartData(series);
+
+        const pieRadius = Math.min(plotFrame.w, plotFrame.h) / this.RADIUS_DIVIDER;
+        const pieCenter = {
             x: plotFrame.x + plotFrame.w / 2,
             y: plotFrame.y + plotFrame.h / 2
         };
 
-        let total = 0;
+        let accRadians = 0;
         ctx.strokeStyle = 'black';
+        ctx.font = `${Math.floor(pieRadius / 5)}px sans-serif`;
 
-        data.forEach(entry => {
-            ctx.beginPath();
-            ctx.moveTo(center.x, center.y);
-            ctx.arc(center.x, center.y, radius, total, total + entry.radians);
-            ctx.lineTo(center.x, center.y);
-
-            ctx.fillStyle = entry.color;
-            if (entry.shape != undefined) {
-                try {
-                    ctx.fillStyle = draw(entry.shape, entry.color, 'black');
-                } catch {
-                    console.warn(`${entry.shape} is invalid shape. See documentation.`);
-                }
-            }
+        entries.forEach(entry => {
+            this.makePiePartPath(pieCenter.x, pieCenter.y, pieRadius, accRadians, accRadians + entry.radians);
+            applyShapeOrColor(ctx, entry.shape, entry.color);
             ctx.fill();
-            if (entry.edgeThickness > 0) {
-                ctx.lineWidth = entry.edgeThickness;
-                ctx.stroke();
-            }
-            if (entry.showValue) {
-                const radVal = total + entry.radians / 2;
-                ctx.fillStyle = 'black';
-                ctx.font = `${Math.floor(radius / 5)}px sans-serif`;
-
-                const text = String(entry.value);
-                const { width, actualBoundingBoxAscent } = ctx.measureText(text);
-                const x = (center.x + Math.cos(radVal) * (radius + width)) - (width / 2);
-                const y = (center.y + Math.sin(radVal) * (radius + actualBoundingBoxAscent)) + (actualBoundingBoxAscent / 2);
-                ctx.fillText(text, x, y);
-            }
-            total += entry.radians;
+            if (entry.borderWidth > 0)
+                this.strokeBorder(entry.borderWidth);
+            if (entry.showValue)
+                this.addPieValue(entry.value, pieCenter.x, pieCenter.y, pieRadius, accRadians + entry.radians / 2);
+            accRadians += entry.radians;
         });
     }
 
@@ -62,11 +46,32 @@ export default class PiePlot extends PlotSkeleton {
         return series.map(serie => ({
             radians: serie.value * 2 * Math.PI / total,
             color: serie.options.color,
-            edgeThickness: serie.options.edgeThickness,
-            shape: serie.options.shape,
+            borderWidth: (serie.options as SerieOptionsArea).borderWidth,
+            shape: (serie.options as SerieOptionsArea).shape,
             showValue: serie.options.showValue,
             value: serie.value
         }));
+    }
+
+    private makePiePartPath(xCenter: number, yCenter: number, radius: number, startAngle: number, endAngle: number): void {
+        this.ctx.beginPath();
+        this.ctx.moveTo(xCenter, yCenter);
+        this.ctx.arc(xCenter, yCenter, radius, startAngle, endAngle);
+        this.ctx.lineTo(xCenter, yCenter);
+    }
+
+    private strokeBorder(width: number): void {
+        this.ctx.lineWidth = width;
+        this.ctx.stroke();
+    }
+
+    private addPieValue(value: number, xCenter: number, yCenter: number, radius: number, radians: number): void {
+        const text = String(value);
+        const { width, actualBoundingBoxAscent } = this.ctx.measureText(text);
+        const x = (xCenter + Math.cos(radians) * (radius + width)) - (width / 2);
+        const y = (yCenter + Math.sin(radians) * (radius + actualBoundingBoxAscent)) + (actualBoundingBoxAscent / 2);
+        this.ctx.fillStyle = 'black';
+        this.ctx.fillText(text, x, y);
     }
 }
 
