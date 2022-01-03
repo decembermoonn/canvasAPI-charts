@@ -15,9 +15,11 @@ export default class BarPlot {
 
     drawBars(labels: string[], series: MultiSerieData[], chartOptions: ChartOptions): void {
         const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
-        const plotFrame = frames.find(frame => frame.id === 'content');
+        let plotFrame = frames.find(frame => frame.id === 'content');
         const labelFrame = frames.find(frame => frame.id === 'labels');
-        const { tickCount, tickHeight } = this.plotKit.drawGridHorizontalLines(series, plotFrame);
+        const maxValueFromSeries = Math.max(...series.map(serie => Math.max(...serie.values)));
+        const { tickCount, tickHeight, tickFrame } = this.plotKit.drawGridHorizontalLines(plotFrame, 0, maxValueFromSeries);
+        plotFrame = tickFrame;
         const hSpaceBetweenTicks = plotFrame.h / ((tickCount + 1) * tickHeight);
 
         const serieCount = series.length;

@@ -1,4 +1,4 @@
-import { ChartOptions, MultiSerieData, SerieDataCommon } from "../../model/types";
+import { ChartOptions, SerieDataCommon } from "../../model/types";
 import { BoxFrameAndTextCoords, FrameRect, TickInfo } from "../types";
 import { getTickInfo } from "../utils";
 
@@ -91,27 +91,44 @@ export default abstract class BasicPlotKit {
         this.ctx.strokeStyle = 'black';
     }
 
-    public drawGridHorizontalLines(series: MultiSerieData[], frame: FrameRect): TickInfo {
+    private measureTickTextMaxWidth(tickCount: number, tickHeight: number, min: number): number {
+        let maxMeasurement = 0;
+        for (let i = 1; i <= tickCount + 1; i++) {
+            const measurement = this.ctx.measureText(String(min + (tickCount + 1 - i) * tickHeight)).width;
+            if (measurement > maxMeasurement)
+                maxMeasurement = measurement;
+        }
+        return maxMeasurement;
+    }
+
+    public drawGridHorizontalLines(frame: FrameRect, min = 0, max = 0): Required<TickInfo> {
         const { ctx } = this;
-        const max = Math.max(...series.map(serie => Math.max(...serie.values)));
-        const { tickCount, tickHeight } = getTickInfo(max, this.MOST_TICKS);
+        const { tickCount, tickHeight } = getTickInfo(this.MOST_TICKS, min, max);
         const singleH = frame.h / (tickCount + 1);
         ctx.lineWidth = 1;
         ctx.strokeStyle = this.HORIZONTAL_LINE_COLOR;
+        const maxWidth = this.measureTickTextMaxWidth(tickCount, tickHeight, min);
         for (let i = 1; i <= tickCount + 1; i++) {
             const y = frame.y + singleH * i;
-            const val = String((tickCount + 1 - i) * tickHeight);
-            const { width } = this.ctx.measureText(val);
-            ctx.fillText(val, frame.x, y);
+            const val = String(min + (tickCount + 1 - i) * tickHeight);
+            const { width } = ctx.measureText(val);
+            ctx.fillText(val, frame.x + (maxWidth - width), y);
             ctx.beginPath();
-            ctx.moveTo(frame.x + width, y);
+            ctx.moveTo(frame.x + maxWidth, y);
             ctx.lineTo(frame.x + frame.w, y);
             ctx.stroke();
             ctx.closePath();
         }
+        const tickFrame: FrameRect = {
+            x: frame.x + maxWidth,
+            y: frame.y,
+            w: frame.w - maxWidth,
+            h: frame.h
+        };
         return {
             tickCount,
-            tickHeight
+            tickHeight,
+            tickFrame
         };
     }
 

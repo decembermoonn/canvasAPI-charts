@@ -21,12 +21,13 @@ export default class LinePlotKit extends BasicPlotKit {
             x: boxFrame.x + boxFrame.w,
             y: yBoxFrameCenter,
         };
-        this.drawDashedLine(p1, p2, options as SerieOptionsLine);
+        this.setLineStyle(options as SerieOptionsLine);
+        this.drawSingleLine(p1, p2);
         ctx.fillStyle = 'black';
         ctx.fillText(name, textCoords.x, textCoords.y, textCoords.maxW);
     }
 
-    public drawDashedLine(p1: Point, p2: Point, options: SerieOptionsLine): void {
+    public setLineStyle(options: SerieOptionsLine): void {
         const { ctx } = this;
         let { dash } = options;
         const { color, dashWidth } = options;
@@ -36,11 +37,13 @@ export default class LinePlotKit extends BasicPlotKit {
         ctx.setLineDash(dash ?? []);
         ctx.strokeStyle = color ?? 'black';
         ctx.lineWidth = dashWidth ?? 1;
+    }
 
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
+    private drawSingleLine(p1: Point, p2: Point): void {
+        this.ctx.beginPath();
+        this.ctx.moveTo(p1.x, p1.y);
+        this.ctx.lineTo(p2.x, p2.y);
+        this.ctx.stroke();
     }
 
     private dashStringToArray(dash: Dash): number[] {
@@ -48,7 +51,7 @@ export default class LinePlotKit extends BasicPlotKit {
             case 'l':
                 return [];
             case 'p':
-                return [1, 1];
+                return [5, 5];
             case 'ls':
                 return [10, 10];
             case 'lls':
