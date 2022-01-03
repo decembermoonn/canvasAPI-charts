@@ -1,8 +1,8 @@
-import { ChartOptions, MultiSerieData, SerieDataCommon, SerieOptionsArea } from "../../model/types";
+import { ChartOptions, MultiSerieData, SerieDataCommon } from "../../model/types";
 import { BoxFrameAndTextCoords, FrameRect, TickInfo } from "../types";
-import { applyShapeOrColor, getTickInfo } from "../utils";
+import { getTickInfo } from "../utils";
 
-export default class BasicPlotKit {
+export default abstract class BasicPlotKit {
     readonly CHART_BORDER_COLOR = '#202020';
     readonly DIVIDER_LINE_COLOR = '#484848';
     readonly HORIZONTAL_LINE_COLOR = '#808080';
@@ -12,6 +12,7 @@ export default class BasicPlotKit {
     readonly LEGEND_PADDING_MULTIPIER = 1;
     readonly SERIE_LEGEND_PER_LEVEL = 5;
     readonly SERIE_PADDING_MULTIPIER = 0.6;
+    readonly LABELS_AREA_MULTIPIER = 0.05;
     readonly MOST_TICKS = 10;
     ctx: CanvasRenderingContext2D;
 
@@ -42,6 +43,12 @@ export default class BasicPlotKit {
             emptyFrame = this.cutFrames(emptyFrame, legendFrame);
         }
 
+        if (chartOptions.showLabels) {
+            const labelsFrame = this.getLabelsFrame(emptyFrame);
+            frames.push(labelsFrame);
+            emptyFrame = this.cutFrames(emptyFrame, labelsFrame);
+        }
+
         frames.push(emptyFrame);
         return frames;
     }
@@ -56,6 +63,12 @@ export default class BasicPlotKit {
         const { x, y, w, h } = frame;
         const hSpace = h * this.LEGEND_AREA_MULTIPIER;
         return this.getFrame(x, y + h - hSpace, w, hSpace, 'legend');
+    }
+
+    private getLabelsFrame(frame: FrameRect): FrameRect {
+        const { x, y, w, h } = frame;
+        const hSpace = h * this.LABELS_AREA_MULTIPIER;
+        return this.getFrame(x, y + h - hSpace, w, hSpace, 'labels');
     }
 
     protected getFrame(x: number, y: number, w: number, h: number, id?: string): FrameRect {
@@ -165,17 +178,5 @@ export default class BasicPlotKit {
         };
     }
 
-    protected performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
-        const { ctx } = this;
-        const { name } = serie;
-        const options = serie.options as SerieOptionsArea;
-        const { boxFrame, textCoords } = boxFrameAndTextCoords;
-        applyShapeOrColor(ctx, options.shape, options.color);
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 3;
-        ctx.fillRect(boxFrame.x, boxFrame.y, boxFrame.w, boxFrame.h);
-        ctx.strokeRect(boxFrame.x, boxFrame.y, boxFrame.w, boxFrame.h);
-        ctx.fillStyle = 'black';
-        ctx.fillText(name, textCoords.x, textCoords.y, textCoords.maxW);
-    }
+    protected abstract performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void;
 }

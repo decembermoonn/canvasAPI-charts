@@ -1,5 +1,5 @@
 import { MultiSeriePointData, ContextSource, Point } from "../types";
-import PointPlot from "../../plot/PointPlot";
+import PointPlot from "../../plot/LinePlot";
 import { MultiChart } from "../MultiChart";
 
 export class PointChart extends MultiChart {

@@ -1,7 +1,7 @@
 import { ChartOptions, MultiSeriePointData } from "../model/types";
 import LinePlotKit from "./plotKits/LinePlotKit";
 
-export default class PointPlot {
+export default class LinePlot {
     readonly ctx: CanvasRenderingContext2D;
     readonly plotKit: LinePlotKit;
 
@@ -12,5 +12,6 @@ export default class PointPlot {
 
     drawPoints(series: MultiSeriePointData[], chartOptions: ChartOptions): void {
         const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
+
     }
 }

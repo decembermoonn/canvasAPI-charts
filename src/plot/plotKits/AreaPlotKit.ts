@@ -1,32 +1,24 @@
-import { ChartOptions, SerieDataCommon } from "../../model/types";
-import { FrameRect } from "../types";
+import { SerieDataCommon, SerieOptionsArea } from "../../model/types";
+import { BoxFrameAndTextCoords } from "../types";
+import { applyShapeOrColor } from "../utils";
 import BasicPlotKit from "./BasicPlotKit";
 
 export default class AreaPlotKit extends BasicPlotKit {
-    readonly LABELS_AREA_MULTIPIER = 0.05;
-
     constructor(ctx: CanvasRenderingContext2D) {
         super(ctx);
     }
 
-    public override prepareChartForDrawing(chartOptions: ChartOptions, series: SerieDataCommon[]): FrameRect[] {
-        const frames = super.prepareChartForDrawing(chartOptions, series);
-        if (chartOptions.showLabels) {
-            const emptyFrame = frames.find(frame => frame.id === 'content');
-            const labelsFrame = this.getLabelsFrame(emptyFrame);
-            const newEmptyFrame = this.cutFrames(emptyFrame, labelsFrame);
-            emptyFrame.x = newEmptyFrame.x;
-            emptyFrame.y = newEmptyFrame.y;
-            emptyFrame.w = newEmptyFrame.w;
-            emptyFrame.h = newEmptyFrame.h;
-            frames.push(labelsFrame);
-        }
-        return frames;
-    }
-
-    private getLabelsFrame(frame: FrameRect): FrameRect {
-        const { x, y, w, h } = frame;
-        const hSpace = h * this.LABELS_AREA_MULTIPIER;
-        return this.getFrame(x, y + h - hSpace, w, hSpace, 'labels');
+    protected performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
+        const { ctx } = this;
+        const { name } = serie;
+        const options = serie.options as SerieOptionsArea;
+        const { boxFrame, textCoords } = boxFrameAndTextCoords;
+        applyShapeOrColor(ctx, options.shape, options.color);
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 3;
+        ctx.fillRect(boxFrame.x, boxFrame.y, boxFrame.w, boxFrame.h);
+        ctx.strokeRect(boxFrame.x, boxFrame.y, boxFrame.w, boxFrame.h);
+        ctx.fillStyle = 'black';
+        ctx.fillText(name, textCoords.x, textCoords.y, textCoords.maxW);
     }
 }
