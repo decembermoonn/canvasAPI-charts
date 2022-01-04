@@ -1,8 +1,8 @@
 import { Dash, Point, SerieDataCommon, SerieOptionsLine } from "../../model/types";
 import { BoxFrameAndTextCoords } from "../types";
-import BasicPlotKit from "./BasicPlotKit";
+import PointPlotKit from "./PointPlotKit";
 
-export default class LinePlotKit extends BasicPlotKit {
+export default class LinePlotKit extends PointPlotKit {
 
     constructor(ctx: CanvasRenderingContext2D) {
         super(ctx);

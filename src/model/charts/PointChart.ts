@@ -1,5 +1,5 @@
 import { MultiSeriePointData, ContextSource, Point } from "../types";
-import PointPlot from "../../plot/LinePlot";
+import PointPlot from "../../plot/PointPlot";
 import { MultiChart } from "../MultiChart";
 
 export class PointChart extends MultiChart {
@@ -7,9 +7,10 @@ export class PointChart extends MultiChart {
     seriesData: MultiSeriePointData[];
     plot: PointPlot;
 
-    constructor(source: ContextSource) {
+    constructor(source: ContextSource, line?: boolean) {
         super(source);
-        this.plot = new PointPlot(this.context);
+        if (!line)
+            this.plot = new PointPlot(this.context);
     }
 
     public set points(points: Point[]) {
@@ -58,6 +59,6 @@ export class PointChart extends MultiChart {
 
     public draw(): void {
         this.seriesData.forEach((data) => data.points.sort((p1, p2) => (p1.x - p2.x)));
-        this.plot.drawPoints(this.seriesData, this.chartOptions);
+        this.plot.draw(this.seriesData, this.chartOptions);
     }
 }
