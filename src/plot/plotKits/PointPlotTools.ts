@@ -1,15 +1,10 @@
 import { draw } from "patternomaly";
 import { Point, SerieDataCommon, SerieOptionsPoint } from "../../model/types";
 import { BoxFrameAndTextCoords } from "../types";
-import BasicPlotKit from "./BasicPlotKit";
+import AbstractPlotTools from "./AbstractPlotTools";
 
-export default class PointPlotKit extends BasicPlotKit {
-
-    constructor(ctx: CanvasRenderingContext2D) {
-        super(ctx);
-    }
-
-    protected override performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
+export default class PointPlotTools extends AbstractPlotTools {
+    public override performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
         const { ctx } = this;
         const { options, name } = serie;
         const { boxFrame, textCoords } = boxFrameAndTextCoords;

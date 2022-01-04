@@ -1,19 +1,16 @@
 import { ChartOptions, MultiSerieData, SerieOptionsArea } from "../model/types";
-import AreaPlotKit from "./plotKits/AreaPlotKit";
+import Plot from "./Plot";
+import PlotKit from "./plotKits/PlotKit";
 import { applyShapeOrColor } from "./utils";
 
-export default class BarPlot {
+export default class BarPlot extends Plot {
     readonly ctx: CanvasRenderingContext2D;
-    readonly plotKit: AreaPlotKit;
     readonly COL_SPACE_SIZE = 0.75;
     readonly VALUE_BOTTOM_PADDING = 4;
 
-    constructor(ctx: CanvasRenderingContext2D) {
-        this.ctx = ctx;
-        this.plotKit = new AreaPlotKit(ctx);
-    }
-
     drawBars(labels: string[], series: MultiSerieData[], chartOptions: ChartOptions): void {
+        if (this.plotKit == undefined)
+            this.plotKit = new PlotKit(this.ctx, this);
         const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
         let plotFrame = frames.find(frame => frame.id === 'content');
         const labelFrame = frames.find(frame => frame.id === 'labels');

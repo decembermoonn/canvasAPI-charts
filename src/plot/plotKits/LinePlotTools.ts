@@ -1,14 +1,9 @@
 import { Dash, Point, SerieDataCommon, SerieOptionsLine } from "../../model/types";
 import { BoxFrameAndTextCoords } from "../types";
-import PointPlotKit from "./PointPlotKit";
+import AbstractPlotTools from "./AbstractPlotTools";
 
-export default class LinePlotKit extends PointPlotKit {
-
-    constructor(ctx: CanvasRenderingContext2D) {
-        super(ctx);
-    }
-
-    protected override performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
+export default class LinePlotTools extends AbstractPlotTools {
+    public override performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
         const { ctx } = this;
         const { options, name } = serie;
         const { boxFrame, textCoords } = boxFrameAndTextCoords;
@@ -27,6 +22,14 @@ export default class LinePlotKit extends PointPlotKit {
         ctx.fillText(name, textCoords.x, textCoords.y, textCoords.maxW);
     }
 
+    private drawSingleLine(p1: Point, p2: Point): void {
+        this.ctx.beginPath();
+        this.ctx.moveTo(p1.x, p1.y);
+        this.ctx.lineTo(p2.x, p2.y);
+        this.ctx.stroke();
+        this.ctx.setLineDash([]);
+    }
+
     public setLineStyle(options: SerieOptionsLine): void {
         const { ctx } = this;
         let { dash } = options;
@@ -37,14 +40,6 @@ export default class LinePlotKit extends PointPlotKit {
             dash = this.dashStringToArray(dash).map(value => value * ctx.lineWidth);
         ctx.setLineDash(dash ?? []);
         ctx.strokeStyle = color ?? 'black';
-    }
-
-    private drawSingleLine(p1: Point, p2: Point): void {
-        this.ctx.beginPath();
-        this.ctx.moveTo(p1.x, p1.y);
-        this.ctx.lineTo(p2.x, p2.y);
-        this.ctx.stroke();
-        this.ctx.setLineDash([]);
     }
 
     private dashStringToArray(dash: Dash): number[] {

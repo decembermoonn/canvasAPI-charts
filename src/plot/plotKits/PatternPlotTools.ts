@@ -1,14 +1,10 @@
 import { SerieDataCommon, SerieOptionsArea } from "../../model/types";
 import { BoxFrameAndTextCoords } from "../types";
 import { applyShapeOrColor } from "../utils";
-import BasicPlotKit from "./BasicPlotKit";
+import AbstractPlotTools from "./AbstractPlotTools";
 
-export default class AreaPlotKit extends BasicPlotKit {
-    constructor(ctx: CanvasRenderingContext2D) {
-        super(ctx);
-    }
-
-    protected performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
+export default class PatternPlotTools extends AbstractPlotTools {
+    public performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
         const { ctx } = this;
         const { name } = serie;
         const options = serie.options as SerieOptionsArea;

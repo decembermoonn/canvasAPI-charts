@@ -1,8 +1,16 @@
 import { ChartOptions, SerieDataCommon } from "../../model/types";
+import BarPlot from "../BarPlot";
+import LinePlot from "../LinePlot";
+import PiePlot from "../PiePlot";
+import Plot from "../Plot";
+import PointPlot from "../PointPlot";
 import { BoxFrameAndTextCoords, FrameRect, TickInfo } from "../types";
 import { getTickInfo } from "../utils";
+import LinePlotTools from "./LinePlotTools";
+import PatternPlotTools from "./PatternPlotTools";
+import PointPlotTools from "./PointPlotTools";
 
-export default abstract class BasicPlotKit {
+export default class PlotKit {
     readonly CHART_BORDER_COLOR = '#202020';
     readonly DIVIDER_LINE_COLOR = '#484848';
     readonly HORIZONTAL_LINE_COLOR = '#808080';
@@ -14,10 +22,18 @@ export default abstract class BasicPlotKit {
     readonly SERIE_PADDING_MULTIPIER = 0.6;
     readonly LABELS_AREA_MULTIPIER = 0.05;
     readonly MOST_TICKS = 10;
-    ctx: CanvasRenderingContext2D;
+    readonly ctx: CanvasRenderingContext2D;
+    readonly plot: Plot;
+    readonly lineTools: LinePlotTools;
+    readonly patternTools: PatternPlotTools;
+    readonly pointTools: PointPlotTools;
 
-    constructor(ctx: CanvasRenderingContext2D) {
+    constructor(ctx: CanvasRenderingContext2D, plot: Plot) {
         this.ctx = ctx;
+        this.plot = plot;
+        this.lineTools = new LinePlotTools(ctx);
+        this.patternTools = new PatternPlotTools(ctx);
+        this.pointTools = new PointPlotTools(ctx);
     }
 
     public prepareChartForDrawing(chartOptions: ChartOptions, series: SerieDataCommon[]): FrameRect[] {
@@ -195,5 +211,15 @@ export default abstract class BasicPlotKit {
         };
     }
 
-    protected abstract performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void;
+    protected performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
+        if (this.plot instanceof BarPlot || this.plot instanceof PiePlot) {
+            this.patternTools.performDrawSingleSerieLegend(boxFrameAndTextCoords, serie);
+        }
+        if (this.plot instanceof PointPlot) {
+            this.pointTools.performDrawSingleSerieLegend(boxFrameAndTextCoords, serie);
+        }
+        if (this.plot instanceof LinePlot) {
+            this.lineTools.performDrawSingleSerieLegend(boxFrameAndTextCoords, serie);
+        }
+    }
 }

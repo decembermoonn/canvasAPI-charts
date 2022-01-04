@@ -1,17 +1,12 @@
 import { ChartOptions, MultiSeriePointData, Point, SerieOptionsPoint } from "../model/types";
-import PointPlotKit from "./plotKits/PointPlotKit";
+import Plot from "./Plot";
+import PlotKit from "./plotKits/PlotKit";
 import { FrameRect, MinMax, ValueToPixelMapperFunc, ValueToPixelMapperFuncPair, ValueToPixelMapperOptions } from "./types";
 
-export default class PointPlot {
-    readonly ctx: CanvasRenderingContext2D;
-    readonly plotKit: PointPlotKit;
-
-    constructor(ctx: CanvasRenderingContext2D, plotKit?: PointPlotKit) {
-        this.ctx = ctx;
-        this.plotKit = plotKit ?? new PointPlotKit(ctx);
-    }
-
+export default class PointPlot extends Plot {
     public draw(series: MultiSeriePointData[], chartOptions: ChartOptions): void {
+        if (this.plotKit == undefined)
+            this.plotKit = new PlotKit(this.ctx, this);
         const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
         let plotFrame = frames.find(frame => frame.id === 'content');
         const labelFrame = frames.find(frame => frame.id === 'labels');
@@ -47,7 +42,7 @@ export default class PointPlot {
         series.forEach(serie => {
             serie.points.forEach(point => {
                 const mappedPoint = this.mapSpacePointToPixelPoint(point, mappers.xFunc, mappers.yFunc);
-                this.plotKit.performDrawPoint(mappedPoint, serie.options as SerieOptionsPoint);
+                this.plotKit.pointTools.performDrawPoint(mappedPoint, serie.options as SerieOptionsPoint);
                 this.drawValueForPoint(point.x, mappedPoint.x, labelFrame);
             });
         });
