@@ -1,6 +1,6 @@
 import { ChartOptions, MultiSeriePointData, Point, SerieOptionsLine } from "../model/types";
 import LinePlotKit from "./plotKits/LinePlotKit";
-import { MinMax, ValueToPixelMapperFunc } from "./types";
+import { MinMax, ValueToPixelMapperFunc, ValueToPixelMapperOptions } from "./types";
 
 export default class LinePlot {
     readonly ctx: CanvasRenderingContext2D;
@@ -18,12 +18,25 @@ export default class LinePlot {
 
         const xMinMaxForSeries = this.getMinMaxForSeries(series, 'x');
         const yMinMaxForSeries = this.getMinMaxForSeries(series, 'y');
-        console.log(xMinMaxForSeries, yMinMaxForSeries);
 
-        plotFrame = this.plotKit.drawGridHorizontalLines(plotFrame, yMinMaxForSeries.min, yMinMaxForSeries.max).tickFrame;
+        const { tickCount, tickFrame } = this.plotKit.drawGridHorizontalLines(plotFrame, yMinMaxForSeries.min, yMinMaxForSeries.max);
+        plotFrame = tickFrame;
+        const spaceBetweenTicksPixelHeight = plotFrame.h / (tickCount + 1);
 
-        const xValueToPixelMapperFunc = this.xGetValueToPixelMapperFunc(plotFrame.x, plotFrame.w, xMinMaxForSeries.min, xMinMaxForSeries.max);
-        const yValueToPixelMapperFunc = this.yGetValueToPixelMapperFunc(plotFrame.y, plotFrame.h, yMinMaxForSeries.min, yMinMaxForSeries.max);
+        const xValueToPixelMapperOptions: ValueToPixelMapperOptions = {
+            beginningInPixels: plotFrame.x + 10,
+            widthOrHeightInPixels: plotFrame.w - 20,
+            minValueFromSeries: xMinMaxForSeries.min,
+            maxValueFromSeries: xMinMaxForSeries.max
+        };
+        const yValueToPixelMapperOptions: ValueToPixelMapperOptions = {
+            beginningInPixels: plotFrame.y + spaceBetweenTicksPixelHeight,
+            widthOrHeightInPixels: plotFrame.h - spaceBetweenTicksPixelHeight,
+            minValueFromSeries: yMinMaxForSeries.min,
+            maxValueFromSeries: yMinMaxForSeries.max
+        };
+        const xValueToPixelMapperFunc = this.xGetValueToPixelMapperFunc(xValueToPixelMapperOptions);
+        const yValueToPixelMapperFunc = this.yGetValueToPixelMapperFunc(yValueToPixelMapperOptions);
 
         series.forEach(serie => {
             this.plotKit.setLineStyle(serie.options as SerieOptionsLine);
@@ -40,6 +53,7 @@ export default class LinePlot {
             this.ctx.closePath();
             this.ctx.stroke();
         });
+        this.ctx.setLineDash([]);
     }
 
     private getMinMaxForSeries(series: MultiSeriePointData[], of: 'x' | 'y'): MinMax {
@@ -79,15 +93,17 @@ export default class LinePlot {
         };
     }
 
-    private xGetValueToPixelMapperFunc(bPX: number, wPX: number, bVX: number, eVX: number): ValueToPixelMapperFunc {
+    private xGetValueToPixelMapperFunc(opt: ValueToPixelMapperOptions): ValueToPixelMapperFunc {
         return (val): number => {
-            return bPX + wPX * ((val - bVX) / (eVX - bVX));
+            return opt.beginningInPixels + opt.widthOrHeightInPixels
+                * ((val - opt.minValueFromSeries) / (opt.maxValueFromSeries - opt.minValueFromSeries));
         };
     }
 
-    private yGetValueToPixelMapperFunc(bPY: number, wPY: number, bVY: number, eVY: number): ValueToPixelMapperFunc {
+    private yGetValueToPixelMapperFunc(opt: ValueToPixelMapperOptions): ValueToPixelMapperFunc {
         return (val): number => {
-            return bPY + wPY * (1 - (val - bVY) / (eVY - bVY));
+            return opt.beginningInPixels + opt.widthOrHeightInPixels
+                * (1 - (val - opt.minValueFromSeries) / (opt.maxValueFromSeries - opt.minValueFromSeries));
         };
     }
 

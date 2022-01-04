@@ -32,11 +32,12 @@ export default class LinePlotKit extends BasicPlotKit {
         let { dash } = options;
         const { color, dashWidth } = options;
 
+        ctx.lineWidth = dashWidth ?? 1;
         if (typeof dash === 'string')
-            dash = this.dashStringToArray(dash);
+            dash = this.dashStringToArray(dash).map(value => value * ctx.lineWidth);
         ctx.setLineDash(dash ?? []);
         ctx.strokeStyle = color ?? 'black';
-        ctx.lineWidth = dashWidth ?? 1;
+
     }
 
     private drawSingleLine(p1: Point, p2: Point): void {
@@ -44,6 +45,7 @@ export default class LinePlotKit extends BasicPlotKit {
         this.ctx.moveTo(p1.x, p1.y);
         this.ctx.lineTo(p2.x, p2.y);
         this.ctx.stroke();
+        this.ctx.setLineDash([]);
     }
 
     private dashStringToArray(dash: Dash): number[] {
@@ -51,9 +53,9 @@ export default class LinePlotKit extends BasicPlotKit {
             case 'l':
                 return [];
             case 'p':
-                return [5, 5];
+                return [1, 1];
             case 'ls':
-                return [10, 10];
+                return [10, 5];
             case 'lls':
                 return [20, 5];
             case 'lp':
@@ -61,7 +63,7 @@ export default class LinePlotKit extends BasicPlotKit {
             case 'lppp':
                 return [20, 3, 3, 3, 3, 3, 3, 3];
             case 'lpsp':
-                return [12, 3, 3];
+                return [8, 2, 2];
             default:
                 return [];
         }

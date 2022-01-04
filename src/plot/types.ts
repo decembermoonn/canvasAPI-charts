@@ -27,3 +27,10 @@ export interface BoxFrameAndTextCoords {
 }
 
 export type ValueToPixelMapperFunc = (value: number) => number
+
+export interface ValueToPixelMapperOptions {
+    beginningInPixels: number;
+    widthOrHeightInPixels: number;
+    minValueFromSeries: number;
+    maxValueFromSeries: number;
+}
