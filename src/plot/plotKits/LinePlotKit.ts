@@ -37,7 +37,6 @@ export default class LinePlotKit extends PointPlotKit {
             dash = this.dashStringToArray(dash).map(value => value * ctx.lineWidth);
         ctx.setLineDash(dash ?? []);
         ctx.strokeStyle = color ?? 'black';
-
     }
 
     private drawSingleLine(p1: Point, p2: Point): void {

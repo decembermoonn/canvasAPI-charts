@@ -1,4 +1,4 @@
-import { ChartOptions, MultiSeriePointData, Point } from "../model/types";
+import { ChartOptions, MultiSeriePointData, Point, SerieOptionsPoint } from "../model/types";
 import PointPlotKit from "./plotKits/PointPlotKit";
 import { FrameRect, MinMax, ValueToPixelMapperFunc, ValueToPixelMapperFuncPair, ValueToPixelMapperOptions } from "./types";
 
@@ -47,14 +47,10 @@ export default class PointPlot {
         series.forEach(serie => {
             serie.points.forEach(point => {
                 const mappedPoint = this.mapSpacePointToPixelPoint(point, mappers.xFunc, mappers.yFunc);
-                this.drawPoint(mappedPoint);
+                this.plotKit.performDrawPoint(mappedPoint, serie.options as SerieOptionsPoint);
                 this.drawValueForPoint(point.x, mappedPoint.x, labelFrame);
             });
         });
-    }
-
-    protected drawPoint(mappedPoint: Point): void {
-        console.warn("NOT IMPLEMENTEED YET");
     }
 
     private getMinMaxForSeries(series: MultiSeriePointData[], of: 'x' | 'y'): MinMax {

@@ -17,7 +17,12 @@ type DashString = 'l' | 'p' | 'ls' | 'lls' | 'lp' | 'lppp' | 'lpsp';
 
 export type Dash = number[] | DashString;
 
-export interface SerieOptionsLine extends SerieOptionsCommon {
+export interface SerieOptionsPoint extends SerieOptionsCommon {
+    pointShape: Parameters<typeof draw>[0];
+    pointSize: number
+}
+
+export interface SerieOptionsLine extends SerieOptionsPoint {
     dash: Dash;
     dashWidth: number;
 }
@@ -29,7 +34,7 @@ export interface SerieOptionsArea extends SerieOptionsCommon {
 
 export interface SerieDataCommon {
     name: string;
-    options: SerieOptionsLine | SerieOptionsArea;
+    options: SerieOptionsPoint | SerieOptionsLine | SerieOptionsArea;
 }
 
 export interface SingleSerieData extends SerieDataCommon {

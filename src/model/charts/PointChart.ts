@@ -43,7 +43,7 @@ export class PointChart extends MultiChart {
         }
     }
 
-    private getDefaultSerieObject(points: Point[], index: number): MultiSeriePointData {
+    protected getDefaultSerieObject(points: Point[], index: number): MultiSeriePointData {
         return {
             name: `serie${index}`,
             points,
@@ -51,8 +51,8 @@ export class PointChart extends MultiChart {
                 color: Math.floor(Math.random() * 16777215).toString(16),
                 showValue: false,
                 showOnLegend: false,
-                dash: [],
-                dashWidth: 1,
+                pointShape: undefined,
+                pointSize: 0,
             }
         };
     }

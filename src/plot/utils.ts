@@ -29,7 +29,7 @@ export function resizeCanvasToDisplaySize(canvas: HTMLCanvasElement): boolean {
 */
 export function getTickInfo(mostTicks: number, min = 0, max = 0): TickInfo {
     const diff = Math.ceil(max - min);
-    
+
     const minimum = diff / mostTicks;
     const magnitude = Math.pow(10, Math.floor(Math.log10(minimum)));
     const residual = minimum / magnitude;
