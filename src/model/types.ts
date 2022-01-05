@@ -27,14 +27,14 @@ export interface SerieOptionsLine extends SerieOptionsPoint {
     dashWidth: number;
 }
 
-export interface SerieOptionsArea extends SerieOptionsCommon {
+export interface SerieOptionsShape extends SerieOptionsCommon {
     shape?: Parameters<typeof draw>[0];
     borderWidth: number;
 }
 
 export interface SerieDataCommon {
     name: string;
-    options: SerieOptionsPoint | SerieOptionsLine | SerieOptionsArea;
+    options: SerieOptionsPoint | SerieOptionsLine | SerieOptionsShape;
 }
 
 export interface SingleSerieData extends SerieDataCommon {

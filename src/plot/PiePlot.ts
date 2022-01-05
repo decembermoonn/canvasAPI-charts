@@ -1,8 +1,7 @@
-import { ChartOptions, SerieOptionsArea, SingleSerieData } from "../model/types";
+import { ChartOptions, SerieOptionsShape, SingleSerieData } from "../model/types";
 import Plot from "./Plot";
 import PlotKit from "./plotKits/PlotKit";
 import { PiePartData } from "./types";
-import { applyShapeOrColor } from "./utils";
 
 export default class PiePlot extends Plot {
     readonly RADIUS_DIVIDER = 2.5;
@@ -26,7 +25,7 @@ export default class PiePlot extends Plot {
 
         entries.forEach(entry => {
             this.makePiePartPath(pieCenter.x, pieCenter.y, pieRadius, accRadians, accRadians + entry.radians);
-            applyShapeOrColor(ctx, entry.shape, entry.color);
+            this.plotKit.patternTools.applyShapeOrColor(ctx, entry.shape, entry.color);
             ctx.fill();
             if (entry.borderWidth > 0)
                 this.strokeBorder(entry.borderWidth);
@@ -41,8 +40,8 @@ export default class PiePlot extends Plot {
         return series.map(serie => ({
             radians: serie.value * 2 * Math.PI / total,
             color: serie.options.color,
-            borderWidth: (serie.options as SerieOptionsArea).borderWidth,
-            shape: (serie.options as SerieOptionsArea).shape,
+            borderWidth: (serie.options as SerieOptionsShape).borderWidth,
+            shape: (serie.options as SerieOptionsShape).shape,
             showValue: serie.options.showValue,
             value: serie.value
         }));

@@ -1,10 +1,11 @@
-import { MultiSeriePointData, SerieOptionsLine } from "../model/types";
+import { SerieOptionsLine } from "../model/types";
 import PlotKit from "./plotKits/PlotKit";
 import PointPlot from "./PointPlot";
-import { FrameRect, ValueToPixelMapperFuncPair } from "./types";
+import { DataForSerieDrawing } from "./types";
 
 export default class LinePlot extends PointPlot {
-    protected override performDrawing(series: MultiSeriePointData[], mappers: ValueToPixelMapperFuncPair, labelFrame: FrameRect): void {
+    protected override performDrawing(data: DataForSerieDrawing): void {
+        const { series, mappers, labelFrame } = data;
         if (this.plotKit == undefined)
             this.plotKit = new PlotKit(this.ctx, this);
         series.forEach(serie => {

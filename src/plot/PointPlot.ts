@@ -1,9 +1,11 @@
 import { ChartOptions, MultiSeriePointData, Point, SerieOptionsPoint } from "../model/types";
 import Plot from "./Plot";
 import PlotKit from "./plotKits/PlotKit";
-import { FrameRect, MinMax, ValueToPixelMapperFunc, ValueToPixelMapperFuncPair, ValueToPixelMapperOptions } from "./types";
+import { DataForSerieDrawing, FrameRect, MinMax, ValueToPixelMapperFunc, ValueToPixelMapperOptions } from "./types";
 
 export default class PointPlot extends Plot {
+    PIXEL_PADDING = 10;
+
     public draw(series: MultiSeriePointData[], chartOptions: ChartOptions): void {
         if (this.plotKit == undefined)
             this.plotKit = new PlotKit(this.ctx, this);
@@ -19,8 +21,8 @@ export default class PointPlot extends Plot {
         const spaceBetweenTicksPixelHeight = plotFrame.h / (tickCount + 1);
 
         const xValueToPixelMapperOptions: ValueToPixelMapperOptions = {
-            beginningInPixels: plotFrame.x + 10,
-            widthOrHeightInPixels: plotFrame.w - 20,
+            beginningInPixels: plotFrame.x + this.PIXEL_PADDING,
+            widthOrHeightInPixels: plotFrame.w - 2 * this.PIXEL_PADDING,
             minValueFromSeries: xMinMaxForSeries.min,
             maxValueFromSeries: xMinMaxForSeries.max
         };
@@ -32,13 +34,20 @@ export default class PointPlot extends Plot {
         };
         const xValueToPixelMapperFunc = this.xGetValueToPixelMapperFunc(xValueToPixelMapperOptions);
         const yValueToPixelMapperFunc = this.yGetValueToPixelMapperFunc(yValueToPixelMapperOptions);
-        this.performDrawing(series, {
-            xFunc: xValueToPixelMapperFunc,
-            yFunc: yValueToPixelMapperFunc
-        }, labelFrame);
+        const data: DataForSerieDrawing = {
+            series,
+            labelFrame,
+            yMinForSeries: yMinMaxForSeries.min,
+            mappers: {
+                xFunc: xValueToPixelMapperFunc,
+                yFunc: yValueToPixelMapperFunc
+            }
+        };
+        this.performDrawing(data);
     }
 
-    protected performDrawing(series: MultiSeriePointData[], mappers: ValueToPixelMapperFuncPair, labelFrame: FrameRect): void {
+    protected performDrawing(data: DataForSerieDrawing): void {
+        const { series, mappers, labelFrame } = data;
         series.forEach(serie => {
             serie.points.forEach(point => {
                 const mappedPoint = this.mapSpacePointToPixelPoint(point, mappers.xFunc, mappers.yFunc);

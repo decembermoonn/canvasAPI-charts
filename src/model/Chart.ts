@@ -1,4 +1,4 @@
-import { SerieDataCommon, ChartOptions, ContextSource, SerieOptionsArea, SerieOptionsLine } from "./types";
+import { SerieDataCommon, ChartOptions, ContextSource, SerieOptionsShape, SerieOptionsLine } from "./types";
 import ChartUtils from "./utils";
 
 export abstract class Chart {
@@ -33,7 +33,7 @@ export abstract class Chart {
         ChartUtils.mergeRight(options, this.chartOptions);
     }
 
-    public setSerieOptions(newOptions: Partial<SerieOptionsArea | SerieOptionsLine>, whichSeries?: string[]): void {
+    public setSerieOptions(newOptions: Partial<SerieOptionsShape | SerieOptionsLine>, whichSeries?: string[]): void {
         if (whichSeries) whichSeries.forEach((serieName) => {
             const actualSerie =
                 this.seriesData.find((existingSerie) => existingSerie.name == serieName);

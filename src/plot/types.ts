@@ -1,4 +1,4 @@
-import { Point, SerieOptionsArea } from "../model/types";
+import { MultiSeriePointData, Point, SerieOptionsShape } from "../model/types";
 
 export interface TickInfo {
     tickHeight: number;
@@ -19,7 +19,7 @@ export interface MinMax {
     max: number;
 }
 
-export type PiePartData = Omit<SerieOptionsArea, 'showOnLegend'> & { radians: number, value: number };
+export type PiePartData = Omit<SerieOptionsShape, 'showOnLegend'> & { radians: number, value: number };
 
 export interface BoxFrameAndTextCoords {
     boxFrame: FrameRect;
@@ -38,4 +38,11 @@ export interface ValueToPixelMapperOptions {
     widthOrHeightInPixels: number;
     minValueFromSeries: number;
     maxValueFromSeries: number;
+}
+
+export interface DataForSerieDrawing {
+    series: MultiSeriePointData[],
+    labelFrame: FrameRect,
+    yMinForSeries: number,
+    mappers: ValueToPixelMapperFuncPair
 }

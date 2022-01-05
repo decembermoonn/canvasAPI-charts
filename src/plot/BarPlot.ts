@@ -1,7 +1,6 @@
-import { ChartOptions, MultiSerieData, SerieOptionsArea } from "../model/types";
+import { ChartOptions, MultiSerieData, SerieOptionsShape } from "../model/types";
 import Plot from "./Plot";
 import PlotKit from "./plotKits/PlotKit";
-import { applyShapeOrColor } from "./utils";
 
 export default class BarPlot extends Plot {
     readonly ctx: CanvasRenderingContext2D;
@@ -53,14 +52,14 @@ export default class BarPlot extends Plot {
                     yColumn,
                     oneColumnWidth,
                     hColumn,
-                    series[s].options as SerieOptionsArea,
+                    series[s].options as SerieOptionsShape,
                     series[s].values[a]
                 );
             }
         }
     }
 
-    private drawBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptionsArea, value: number): void {
+    private drawBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptionsShape, value: number): void {
         this.fillBar(xpos, ypos, width, height, options);
         const { showValue, borderWidth } = options;
         if (borderWidth)
@@ -69,9 +68,9 @@ export default class BarPlot extends Plot {
             this.addBarValue(xpos, ypos, width, value);
     }
 
-    private fillBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptionsArea): void {
+    private fillBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptionsShape): void {
         const { color, shape } = options;
-        applyShapeOrColor(this.ctx, shape, color);
+        this.plotKit.patternTools.applyShapeOrColor(this.ctx, shape, color);
         this.ctx.fillRect(xpos, ypos, width, height);
     }
 

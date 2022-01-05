@@ -1,4 +1,5 @@
 import { ChartOptions, SerieDataCommon } from "../../model/types";
+import AreaPlot from "../AreaPlot";
 import BarPlot from "../BarPlot";
 import LinePlot from "../LinePlot";
 import PiePlot from "../PiePlot";
@@ -212,7 +213,7 @@ export default class PlotKit {
     }
 
     protected performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
-        if (this.plot instanceof BarPlot || this.plot instanceof PiePlot) {
+        if (this.plot instanceof BarPlot || this.plot instanceof PiePlot || this.plot instanceof AreaPlot) {
             this.patternTools.performDrawSingleSerieLegend(boxFrameAndTextCoords, serie);
         }
         if (this.plot instanceof PointPlot) {
