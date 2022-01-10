@@ -1,10 +1,11 @@
-import { SerieOptionsLine, SerieOptionsPoint, SerieOptionsShape } from "../model/types";
+import { SerieOptionsLine, SerieOptionsPoint, SerieOptionsShape } from "../../model/types";
 import LinePlot from "./LinePlot";
-import PlotKit from "./plotKits/PlotKit";
-import { DataForSerieDrawing } from "./types";
+import PlotKit from "../plotKits/PlotKit";
+import { DataForSerieDrawing } from "../types";
 
 export default class AreaPlot extends LinePlot {
-    PIXEL_PADDING = 0;
+
+    override PIXEL_PADDING = 0;
 
     protected override performDrawing(data: DataForSerieDrawing): void {
         const { series, mappers, labelFrame, yMinForSeries } = data;

@@ -1,7 +1,7 @@
-import { SerieOptionsLine, SerieOptionsPoint } from "../model/types";
-import PlotKit from "./plotKits/PlotKit";
+import { SerieOptionsLine, SerieOptionsPoint } from "../../model/types";
+import PlotKit from "./../plotKits/PlotKit";
 import PointPlot from "./PointPlot";
-import { DataForSerieDrawing } from "./types";
+import { DataForSerieDrawing } from "./../types";
 
 export default class LinePlot extends PointPlot {
     protected override performDrawing(data: DataForSerieDrawing): void {

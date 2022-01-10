@@ -7,21 +7,20 @@ import { LineChart } from "../model/charts/LineChart";
 import { HistogramChart } from "../model/charts/HistogramChart";
 import { AreaChart } from "../model/charts/AreaChart";
 
+const typeToClassPairs = {
+    "pie": PieChart,
+    "bar": BarChart,
+    "histogram": HistogramChart,
+    "points": PointChart,
+    "line": LineChart,
+    "area": AreaChart
+};
+
 export default function serveChart(type: string, source: ContextSource): Chart {
-    switch (type.toLowerCase().trim()) {
-        case "pie":
-            return new PieChart(source);
-        case "bar":
-            return new BarChart(source);
-        case "histogram":
-            return new HistogramChart(source);
-        case "points":
-            return new PointChart(source);
-        case "line":
-            return new LineChart(source);
-        case "area":
-            return new AreaChart(source);
-        default:
-            throw new Error(`${type} chart is not (yet) defined.`);
-    }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    const ClassRef = typeToClassPairs[type.toLowerCase().trim()];
+    if (ClassRef)
+        return new ClassRef(source, type);
+    throw new Error(`${type} chart is not defined.`);
 }

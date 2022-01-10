@@ -1,4 +1,4 @@
-import { MultiSeriePointData, Point, SerieOptionsShape } from "../model/types";
+import { ChartOptions, MultiSeriePointData, Point, SerieDataCommon, SerieOptionsShape } from "../model/types";
 
 export interface TickInfo {
     tickHeight: number;
@@ -45,4 +45,10 @@ export interface DataForSerieDrawing {
     labelFrame: FrameRect,
     yMinForSeries: number,
     mappers: ValueToPixelMapperFuncPair
+}
+
+export interface DataForPlot {
+    series: SerieDataCommon[],
+    chartOptions: ChartOptions,
+    dataLabels?: string[]
 }

@@ -1,17 +1,10 @@
-import { SingleSerieData, ContextSource } from "../types";
+import { SingleSerieData } from "../types";
 import { Chart } from "../Chart";
 import ChartUtils from "../utils";
-import PiePlot from "../../plot/PiePlot";
 
 export class PieChart extends Chart {
 
     seriesData: SingleSerieData[];
-    plot: PiePlot;
-
-    constructor(source: ContextSource) {
-        super(source);
-        this.plot = new PiePlot(this.context);
-    }
 
     public set X(labels: string[]) {
         this.seriesData =
@@ -43,6 +36,9 @@ export class PieChart extends Chart {
     }
 
     public draw(): void {
-        this.plot.drawPie(this.seriesData, this.chartOptions);
+        super.draw({
+            series: this.seriesData,
+            chartOptions: this.chartOptions
+        });
     }
 }

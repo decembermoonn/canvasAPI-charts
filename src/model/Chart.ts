@@ -1,13 +1,17 @@
+import Plot from "../plot/Plot";
+import plotServant from "../plot/PlotServant";
+import { DataForPlot } from "../plot/types";
 import { SerieDataCommon, ChartOptions, ContextSource, SerieOptionsShape, SerieOptionsLine } from "./types";
 import ChartUtils from "./utils";
 
 export abstract class Chart {
 
     context: CanvasRenderingContext2D;
-    seriesData: SerieDataCommon[];
+    seriesData: SerieDataCommon[] = [];
     chartOptions: ChartOptions;
+    plot: Plot;
 
-    constructor(source: ContextSource) {
+    constructor(source: ContextSource, chartType: string) {
         let analyzedElement = source;
         if (typeof analyzedElement === 'string') {
             analyzedElement = document.getElementById(analyzedElement.replace('/^#/', '')) as HTMLCanvasElement;
@@ -19,14 +23,16 @@ export abstract class Chart {
             this.context = analyzedElement;
         }
         else throw Error('Argument must be valid ID, HTMLCanvasElement or CanvasRenderingContext2D');
+        this.setDefaultChartOptions();
+        this.plot = plotServant(this.context, chartType);
+    }
 
+    protected setDefaultChartOptions(): void {
         this.chartOptions = {
-            title: 'Untitled',
+            title: 'Title',
             showTitle: true,
             showLegend: false,
-            showLabels: true,
         };
-        this.seriesData = [];
     }
 
     public setChartOptions(options: Partial<ChartOptions>): void {
@@ -46,7 +52,10 @@ export abstract class Chart {
         else this.seriesData.forEach((serie) => ChartUtils.mergeRight(newOptions, serie.options));
     }
 
+    public draw(data: DataForPlot): void {
+        this.plot.draw(data);
+    }
+
     public abstract set X(value: string[] | number[] | number[][]);
     public abstract set Y(value: number[] | number[][]);
-    public abstract draw(): void;
 }

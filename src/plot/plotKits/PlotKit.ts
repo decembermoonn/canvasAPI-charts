@@ -1,10 +1,10 @@
-import { ChartOptions, SerieDataCommon } from "../../model/types";
-import AreaPlot from "../AreaPlot";
-import BarPlot from "../BarPlot";
-import LinePlot from "../LinePlot";
-import PiePlot from "../PiePlot";
+import { ChartOptions, MultiChartOptions, SerieDataCommon } from "../../model/types";
+import AreaPlot from "../plots/AreaPlot";
+import BarPlot from "../plots/BarPlot";
+import LinePlot from "../plots/LinePlot";
+import PiePlot from "../plots/PiePlot";
 import Plot from "../Plot";
-import PointPlot from "../PointPlot";
+import PointPlot from "../plots/PointPlot";
 import { BoxFrameAndTextCoords, FrameRect, TickInfo } from "../types";
 import { getTickInfo } from "../utils";
 import LinePlotTools from "./LinePlotTools";
@@ -37,7 +37,7 @@ export default class PlotKit {
         this.pointTools = new PointPlotTools(ctx);
     }
 
-    public prepareChartForDrawing(chartOptions: ChartOptions, series: SerieDataCommon[]): FrameRect[] {
+    public prepareChartForDrawing(chartOptions: ChartOptions | MultiChartOptions, series: SerieDataCommon[]): FrameRect[] {
         const { ctx } = this;
         const { width, height } = ctx.canvas;
         this.ctx.clearRect(0, 0, width, height);
@@ -60,7 +60,7 @@ export default class PlotKit {
             emptyFrame = this.cutFrames(emptyFrame, legendFrame);
         }
 
-        if (chartOptions.showLabels) {
+        if ((chartOptions as MultiChartOptions).showLabels) {
             const labelsFrame = this.getLabelsFrame(emptyFrame);
             frames.push(labelsFrame);
             emptyFrame = this.cutFrames(emptyFrame, labelsFrame);

@@ -1,11 +1,15 @@
-import { ChartOptions, SerieOptionsShape, SingleSerieData } from "../model/types";
-import Plot from "./Plot";
-import PlotKit from "./plotKits/PlotKit";
-import { PiePartData } from "./types";
+import { SerieOptionsShape, SingleSerieData } from "../../model/types";
+import Plot from "./../Plot";
+import PlotKit from "./../plotKits/PlotKit";
+import { DataForPlot, PiePartData } from "./../types";
 
 export default class PiePlot extends Plot {
+
     readonly RADIUS_DIVIDER = 2.5;
-    drawPie(series: SingleSerieData[], chartOptions: ChartOptions): void {
+
+    draw(data: DataForPlot): void {
+        const series = data.series as SingleSerieData[];
+        const chartOptions = data.chartOptions;
         if (this.plotKit == undefined)
             this.plotKit = new PlotKit(this.ctx, this);
         const { ctx } = this;

@@ -1,12 +1,15 @@
-import { ChartOptions, MultiSeriePointData, Point, SerieOptionsPoint } from "../model/types";
-import Plot from "./Plot";
-import PlotKit from "./plotKits/PlotKit";
-import { DataForSerieDrawing, FrameRect, MinMax, ValueToPixelMapperFunc, ValueToPixelMapperOptions } from "./types";
+import { MultiSeriePointData, Point, SerieOptionsPoint } from "../../model/types";
+import Plot from "./../Plot";
+import PlotKit from "./../plotKits/PlotKit";
+import { DataForPlot, DataForSerieDrawing, FrameRect, MinMax, ValueToPixelMapperFunc, ValueToPixelMapperOptions } from "./../types";
 
 export default class PointPlot extends Plot {
+
     PIXEL_PADDING = 10;
 
-    public draw(series: MultiSeriePointData[], chartOptions: ChartOptions): void {
+    public draw(data: DataForPlot): void {
+        const series = data.series as MultiSeriePointData[];
+        const chartOptions = data.chartOptions;
         if (this.plotKit == undefined)
             this.plotKit = new PlotKit(this.ctx, this);
         const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
@@ -34,7 +37,7 @@ export default class PointPlot extends Plot {
         };
         const xValueToPixelMapperFunc = this.xGetValueToPixelMapperFunc(xValueToPixelMapperOptions);
         const yValueToPixelMapperFunc = this.yGetValueToPixelMapperFunc(yValueToPixelMapperOptions);
-        const data: DataForSerieDrawing = {
+        const dataForSerie: DataForSerieDrawing = {
             series,
             labelFrame,
             yMinForSeries: yMinMaxForSeries.min,
@@ -43,7 +46,7 @@ export default class PointPlot extends Plot {
                 yFunc: yValueToPixelMapperFunc
             }
         };
-        this.performDrawing(data);
+        this.performDrawing(dataForSerie);
     }
 
     protected performDrawing(data: DataForSerieDrawing): void {

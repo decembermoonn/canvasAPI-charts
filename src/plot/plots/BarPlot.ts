@@ -1,13 +1,18 @@
-import { ChartOptions, MultiSerieData, SerieOptionsShape } from "../model/types";
-import Plot from "./Plot";
-import PlotKit from "./plotKits/PlotKit";
+import { MultiChartOptions, MultiSerieData, SerieOptionsShape } from "../../model/types";
+import Plot from "./../Plot";
+import PlotKit from "./../plotKits/PlotKit";
+import { DataForPlot } from "./../types";
 
 export default class BarPlot extends Plot {
+
     readonly ctx: CanvasRenderingContext2D;
     readonly COL_SPACE_SIZE = 0.75;
     readonly VALUE_BOTTOM_PADDING = 4;
 
-    drawBars(labels: string[], series: MultiSerieData[], chartOptions: ChartOptions): void {
+    draw(data: DataForPlot): void {
+        const labels = data.dataLabels;
+        const series = data.series as MultiSerieData[];
+        const chartOptions = data.chartOptions as MultiChartOptions;
         if (this.plotKit == undefined)
             this.plotKit = new PlotKit(this.ctx, this);
         const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
