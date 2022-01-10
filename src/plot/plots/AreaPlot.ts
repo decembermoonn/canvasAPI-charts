@@ -1,6 +1,5 @@
 import { SerieOptionsLine, SerieOptionsPoint, SerieOptionsShape } from "../../model/types";
 import LinePlot from "./LinePlot";
-import PlotKit from "../plotKits/PlotKit";
 import { DataForSerieDrawing } from "../types";
 
 export default class AreaPlot extends LinePlot {
@@ -10,9 +9,6 @@ export default class AreaPlot extends LinePlot {
     protected override performDrawing(data: DataForSerieDrawing): void {
         const { series, mappers, labelFrame, yMinForSeries } = data;
         const bottom = mappers.yFunc(yMinForSeries);
-
-        if (this.plotKit == undefined)
-            this.plotKit = new PlotKit(this.ctx, this);
 
         for (let serieIndex = 0; serieIndex < series.length; serieIndex++) {
             const pointsInSerie = series[serieIndex].points.length;

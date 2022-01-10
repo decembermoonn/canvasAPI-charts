@@ -35,6 +35,17 @@ export abstract class Chart {
         };
     }
 
+    protected getDefaultSerieObjectBase(): SerieDataCommon {
+        return {
+            name: `unnamed`,
+            options: {
+                color: Math.floor(Math.random() * 16777215).toString(16),
+                showValue: false,
+                showOnLegend: false,
+            }
+        };
+    }
+
     public setChartOptions(options: Partial<ChartOptions>): void {
         ChartUtils.mergeRight(options, this.chartOptions);
     }

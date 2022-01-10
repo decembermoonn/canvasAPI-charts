@@ -19,6 +19,6 @@ export default function plotServant(ctx: CanvasRenderingContext2D, type: string)
     //@ts-ignore
     const ClassRef = typeToClassPairs[type];
     if (ClassRef)
-        return new ClassRef(ctx);
+        return new ClassRef(ctx, type);
     throw new Error(`Plotter for ${type} is not defined.`);
 }

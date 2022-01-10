@@ -7,8 +7,9 @@ export default abstract class Plot {
     readonly ctx: CanvasRenderingContext2D;
     plotKit: PlotKit;
 
-    constructor(ctx: CanvasRenderingContext2D) {
+    constructor(ctx: CanvasRenderingContext2D, type: string) {
         this.ctx = ctx;
+        this.plotKit = new PlotKit(ctx, type);
     }
 
     public abstract draw(data: DataForPlot): void;

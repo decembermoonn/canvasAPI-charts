@@ -1,10 +1,4 @@
 import { ChartOptions, MultiChartOptions, SerieDataCommon } from "../../model/types";
-import AreaPlot from "../plots/AreaPlot";
-import BarPlot from "../plots/BarPlot";
-import LinePlot from "../plots/LinePlot";
-import PiePlot from "../plots/PiePlot";
-import Plot from "../Plot";
-import PointPlot from "../plots/PointPlot";
 import { BoxFrameAndTextCoords, FrameRect, TickInfo } from "../types";
 import { getTickInfo } from "../utils";
 import LinePlotTools from "./LinePlotTools";
@@ -24,14 +18,14 @@ export default class PlotKit {
     readonly LABELS_AREA_MULTIPIER = 0.05;
     readonly MOST_TICKS = 10;
     readonly ctx: CanvasRenderingContext2D;
-    readonly plot: Plot;
+    readonly plotType: string;
     readonly lineTools: LinePlotTools;
     readonly patternTools: PatternPlotTools;
     readonly pointTools: PointPlotTools;
 
-    constructor(ctx: CanvasRenderingContext2D, plot: Plot) {
+    constructor(ctx: CanvasRenderingContext2D, plotType: string) {
         this.ctx = ctx;
-        this.plot = plot;
+        this.plotType = plotType;
         this.lineTools = new LinePlotTools(ctx);
         this.patternTools = new PatternPlotTools(ctx);
         this.pointTools = new PointPlotTools(ctx);
@@ -213,13 +207,11 @@ export default class PlotKit {
     }
 
     protected performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
-        if (this.plot instanceof BarPlot || this.plot instanceof PiePlot || this.plot instanceof AreaPlot) {
+        if (["bar", "pie", "area"].includes(this.plotType))
             this.patternTools.performDrawSingleSerieLegend(boxFrameAndTextCoords, serie);
-        }
-        if (this.plot instanceof PointPlot) {
+        if (this.plotType === "point")
             this.pointTools.performDrawSingleSerieLegend(boxFrameAndTextCoords, serie);
-        }
-        if (this.plot instanceof LinePlot) {
+        if (this.plotType === "line") {
             this.lineTools.performDrawSingleSerieLegend(boxFrameAndTextCoords, serie);
         }
     }

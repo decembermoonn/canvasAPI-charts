@@ -19,17 +19,16 @@ export class BarChart extends MultiChart {
     }
 
     private getDefaultSerieObject(serie: number[], index: number): MultiSerieData {
-        return {
-            values: serie,
-            name: `serie${index}`,
-            options: {
-                color: Math.floor(Math.random() * 16777215).toString(16),
-                showValue: false,
-                showOnLegend: false,
-                borderWidth: 0,
-                shape: undefined,
-            }
-        };
+        const obj = super.getDefaultSerieObjectBase();
+        obj.name = `serie${index}`;
+        Object.assign(obj, {
+            values: serie
+        });
+        Object.assign(obj.options, {
+            borderWidth: 0,
+            shape: undefined,
+        });
+        return obj as MultiSerieData;
     }
 
     public draw(): void {

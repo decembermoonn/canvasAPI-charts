@@ -1,6 +1,5 @@
 import { SerieOptionsShape, SingleSerieData } from "../../model/types";
 import Plot from "./../Plot";
-import PlotKit from "./../plotKits/PlotKit";
 import { DataForPlot, PiePartData } from "./../types";
 
 export default class PiePlot extends Plot {
@@ -10,8 +9,6 @@ export default class PiePlot extends Plot {
     draw(data: DataForPlot): void {
         const series = data.series as SingleSerieData[];
         const chartOptions = data.chartOptions;
-        if (this.plotKit == undefined)
-            this.plotKit = new PlotKit(this.ctx, this);
         const { ctx } = this;
         const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
         const plotFrame = frames.find(frame => frame.id === 'content');

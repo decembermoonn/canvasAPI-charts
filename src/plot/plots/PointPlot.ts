@@ -1,6 +1,5 @@
 import { MultiSeriePointData, Point, SerieOptionsPoint } from "../../model/types";
 import Plot from "./../Plot";
-import PlotKit from "./../plotKits/PlotKit";
 import { DataForPlot, DataForSerieDrawing, FrameRect, MinMax, ValueToPixelMapperFunc, ValueToPixelMapperOptions } from "./../types";
 
 export default class PointPlot extends Plot {
@@ -10,8 +9,6 @@ export default class PointPlot extends Plot {
     public draw(data: DataForPlot): void {
         const series = data.series as MultiSeriePointData[];
         const chartOptions = data.chartOptions;
-        if (this.plotKit == undefined)
-            this.plotKit = new PlotKit(this.ctx, this);
         const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
         let plotFrame = frames.find(frame => frame.id === 'content');
         const labelFrame = frames.find(frame => frame.id === 'labels');

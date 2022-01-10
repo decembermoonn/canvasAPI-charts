@@ -22,17 +22,16 @@ export class PieChart extends Chart {
     }
 
     private getDefaultSerieObject(label: string): SingleSerieData {
-        return {
-            value: 0,
-            name: label,
-            options: {
-                color: Math.floor(Math.random() * 16777215).toString(16),
-                showValue: false,
-                showOnLegend: false,
-                borderWidth: 0,
-                shape: undefined,
-            }
-        };
+        const obj = super.getDefaultSerieObjectBase();
+        obj.name = label;
+        Object.assign(obj, {
+            value: 0
+        });
+        Object.assign(obj.options, {
+            borderWidth: 0,
+            shape: undefined,
+        });
+        return obj as SingleSerieData;
     }
 
     public draw(): void {

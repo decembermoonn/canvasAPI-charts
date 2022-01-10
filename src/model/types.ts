@@ -48,7 +48,7 @@ export interface SerieOptionsShape extends SerieOptionsCommon {
 // Serie Data
 export interface SerieDataCommon {
     name: string;
-    options: SerieOptionsPoint | SerieOptionsLine | SerieOptionsShape;
+    options: SerieOptionsCommon | SerieOptionsPoint | SerieOptionsLine | SerieOptionsShape;
 }
 
 export interface SingleSerieData extends SerieDataCommon {

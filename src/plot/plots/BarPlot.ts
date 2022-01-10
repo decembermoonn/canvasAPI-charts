@@ -1,6 +1,5 @@
 import { MultiChartOptions, MultiSerieData, SerieOptionsShape } from "../../model/types";
 import Plot from "./../Plot";
-import PlotKit from "./../plotKits/PlotKit";
 import { DataForPlot } from "./../types";
 
 export default class BarPlot extends Plot {
@@ -13,8 +12,6 @@ export default class BarPlot extends Plot {
         const labels = data.dataLabels;
         const series = data.series as MultiSerieData[];
         const chartOptions = data.chartOptions as MultiChartOptions;
-        if (this.plotKit == undefined)
-            this.plotKit = new PlotKit(this.ctx, this);
         const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
         let plotFrame = frames.find(frame => frame.id === 'content');
         const labelFrame = frames.find(frame => frame.id === 'labels');

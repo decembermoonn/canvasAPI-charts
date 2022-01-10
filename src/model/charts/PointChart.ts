@@ -36,17 +36,16 @@ export class PointChart extends MultiChart {
     }
 
     protected getDefaultSerieObject(points: Point[], index: number): MultiSeriePointData {
-        return {
-            name: `serie${index}`,
-            points,
-            options: {
-                color: Math.floor(Math.random() * 16777215).toString(16),
-                showValue: false,
-                showOnLegend: false,
-                pointShape: undefined,
-                pointSize: 0,
-            }
-        };
+        const obj = super.getDefaultSerieObjectBase();
+        obj.name = `serie${index}`;
+        Object.assign(obj, {
+            points
+        });
+        Object.assign(obj.options, {
+            pointShape: undefined,
+            pointSize: 0,
+        });
+        return obj as MultiSeriePointData;
     }
 
     public draw(): void {
