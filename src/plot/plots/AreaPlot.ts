@@ -5,7 +5,7 @@ import { DataForSerieDrawing } from "../types";
 
 export default class AreaPlot extends LinePlot {
 
-    override PIXEL_PADDING = 0;
+    PIXEL_PADDING = 0;
 
     protected override performDrawing(data: DataForSerieDrawing): void {
         const { series, mappers, labelFrame, yMinForSeries } = data;
@@ -36,7 +36,7 @@ export default class AreaPlot extends LinePlot {
             const lastPoint = this.mapSpacePointToPixelPoint(points[pointsInSerie - 1], mappers.xFunc, mappers.yFunc);
             path.lineTo(lastPoint.x, lastPoint.y);
             path.lineTo(lastPoint.x, bottom);
-            this.drawValueForPoint(points[pointsInSerie - 1].x, firstPoint.x, labelFrame);
+            this.drawValueForPoint(points[pointsInSerie - 1].x, lastPoint.x, labelFrame);
             this.plotKit.pointTools.performDrawPoint(lastPoint, options as SerieOptionsPoint);
 
             this.plotKit.lineTools.setLineStyle(options as SerieOptionsLine);
