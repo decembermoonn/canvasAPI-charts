@@ -15,9 +15,7 @@ const typeToClassPairs = {
 };
 
 export default function plotServant(ctx: CanvasRenderingContext2D, type: string): Plot {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    const ClassRef = typeToClassPairs[type];
+    const ClassRef = typeToClassPairs[type as keyof typeof typeToClassPairs];
     if (ClassRef)
         return new ClassRef(ctx, type);
     throw new Error(`Plotter for ${type} is not defined.`);

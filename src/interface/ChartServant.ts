@@ -17,9 +17,7 @@ const typeToClassPairs = {
 };
 
 export default function serveChart(type: string, source: ContextSource): Chart {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    const ClassRef = typeToClassPairs[type.toLowerCase().trim()];
+    const ClassRef = typeToClassPairs[type.toLowerCase().trim() as keyof typeToClassPairs];
     if (ClassRef)
         return new ClassRef(source, type);
     throw new Error(`${type} chart is not defined.`);

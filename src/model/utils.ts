@@ -17,17 +17,15 @@ export default class {
 
     /**
      * Merge properties from 'newOptions' to 'actualOptions' (right-join like).
-     * @param newOptions - some option properties for type T.
-     * @param actualOptions - all option properties for type T.
+     * @param newOptions - object with some options.
+     * @param actualOptions - object with all options.
     */
-    public static mergeRight<T>(newOptions: Partial<T>, actualOptions: T): void {
+    public static mergeRight(newOptions: Record<string, unknown>, actualOptions: Record<string, unknown>): void {
         const keys = Object.keys(actualOptions);
         Object.entries(newOptions).forEach(pair => {
             const key = pair[0];
             if (keys.includes(key)) {
                 const value = pair[1];
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment 
-                // @ts-ignore
                 actualOptions[key] = value;
             }
         });
