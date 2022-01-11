@@ -12,8 +12,10 @@ type DashString = 'l' | 'p' | 'ls' | 'lls' | 'lp' | 'lppp' | 'lpsp';
 
 export type Dash = number[] | DashString;
 
+export type ShapeType = Parameters<typeof draw>[0];
+
 // Chart Options
-export interface ChartOptions {
+export interface ChartOptions extends Record<string, unknown> {
     title: string;
     showTitle: boolean;
     showLegend: boolean;
@@ -24,14 +26,14 @@ export interface MultiChartOptions extends ChartOptions {
 }
 
 // Serie Options
-export interface SerieOptionsCommon {
+export interface SerieOptionsCommon extends Record<string, unknown> {
     color: string;
     showValue: boolean;
     showOnLegend: boolean;
 }
 
 export interface SerieOptionsPoint extends SerieOptionsCommon {
-    pointShape: Parameters<typeof draw>[0];
+    pointShape: ShapeType;
     pointSize: number
 }
 
@@ -41,7 +43,7 @@ export interface SerieOptionsLine extends SerieOptionsPoint {
 }
 
 export interface SerieOptionsShape extends SerieOptionsCommon {
-    shape?: Parameters<typeof draw>[0];
+    shape?: ShapeType;
     borderWidth: number;
 }
 

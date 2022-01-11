@@ -3,8 +3,8 @@ import ChartUtils from "../utils";
 import { MultiChart } from "../MultiChart";
 
 export class BarChart extends MultiChart {
-    dataLabels: string[];
-    seriesData: MultiSerieData[];
+    protected dataLabels: string[];
+    protected override seriesData: MultiSerieData[];
 
     public set X(labels: string[]) {
         this.dataLabels = labels;
@@ -18,7 +18,7 @@ export class BarChart extends MultiChart {
         this.seriesData = mappedSeries.map((serie, index) => this.getDefaultSerieObject(serie, index));
     }
 
-    private getDefaultSerieObject(serie: number[], index: number): MultiSerieData {
+    protected getDefaultSerieObject(serie: number[], index: number): MultiSerieData {
         const obj = super.getDefaultSerieObjectBase();
         obj.name = `serie${index}`;
         Object.assign(obj, {

@@ -17,7 +17,7 @@ const typeToClassPairs = {
 };
 
 export default function serveChart(type: string, source: ContextSource): Chart {
-    const ClassRef = typeToClassPairs[type.toLowerCase().trim() as keyof typeToClassPairs];
+    const ClassRef = typeToClassPairs[type.toLowerCase().trim() as keyof typeof typeToClassPairs];
     if (ClassRef)
         return new ClassRef(source, type);
     throw new Error(`${type} chart is not defined.`);

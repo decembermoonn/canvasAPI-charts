@@ -3,7 +3,7 @@ import { MultiChart } from "../MultiChart";
 
 export class PointChart extends MultiChart {
 
-    seriesData: MultiSeriePointData[];
+    protected override seriesData: MultiSeriePointData[];
 
     public set points(points: Point[]) {
         const count = this.seriesData.filter((serie) => serie.name.startsWith('serie')).length;

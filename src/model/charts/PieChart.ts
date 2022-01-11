@@ -4,7 +4,7 @@ import ChartUtils from "../utils";
 
 export class PieChart extends Chart {
 
-    seriesData: SingleSerieData[];
+    protected override seriesData: SingleSerieData[];
 
     public set X(labels: string[]) {
         this.seriesData =
@@ -21,7 +21,7 @@ export class PieChart extends Chart {
         });
     }
 
-    private getDefaultSerieObject(label: string): SingleSerieData {
+    protected getDefaultSerieObject(label: string): SingleSerieData {
         const obj = super.getDefaultSerieObjectBase();
         obj.name = label;
         Object.assign(obj, {

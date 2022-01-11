@@ -1,4 +1,4 @@
-import { SerieOptionsShape, SingleSerieData } from "../../model/types";
+import { SerieOptionsShape, SingleSerieData, ShapeType } from "../../model/types";
 import Plot from "./../Plot";
 import { DataForPlot, PiePartData } from "./../types";
 
@@ -26,9 +26,9 @@ export default class PiePlot extends Plot {
 
         entries.forEach(entry => {
             this.makePiePartPath(pieCenter.x, pieCenter.y, pieRadius, accRadians, accRadians + entry.radians);
-            this.plotKit.patternTools.applyShapeOrColor(ctx, entry.shape, entry.color);
+            this.plotKit.patternTools.applyShapeOrColor(ctx, entry.shape as ShapeType, entry.color as string);
             ctx.fill();
-            if (entry.borderWidth > 0)
+            if (typeof entry.borderWidth === 'number' && entry.borderWidth > 0)
                 this.strokeBorder(entry.borderWidth);
             if (entry.showValue)
                 this.addPieValue(entry.value, pieCenter.x, pieCenter.y, pieRadius, accRadians + entry.radians / 2);

@@ -6,10 +6,10 @@ import ChartUtils from "./utils";
 
 export abstract class Chart {
 
-    context: CanvasRenderingContext2D;
-    seriesData: SerieDataCommon[] = [];
-    chartOptions: ChartOptions;
-    plot: Plot;
+    protected context: CanvasRenderingContext2D;
+    protected seriesData: SerieDataCommon[] = [];
+    protected chartOptions: ChartOptions;
+    protected plot: Plot;
 
     constructor(source: ContextSource, chartType: string) {
         let analyzedElement = source;
