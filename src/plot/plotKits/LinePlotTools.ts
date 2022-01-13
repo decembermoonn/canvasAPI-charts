@@ -3,7 +3,7 @@ import { BoxFrameAndTextCoords } from "../types";
 import AbstractPlotTools from "./AbstractPlotTools";
 
 export default class LinePlotTools extends AbstractPlotTools {
-    public override performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
+    public performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
         const { ctx } = this;
         const { options, name } = serie;
         const { boxFrame, textCoords } = boxFrameAndTextCoords;

@@ -4,7 +4,7 @@ import { DataForPlot, DataForSerieDrawing, FrameRect, MinMax, ValueToPixelMapper
 
 export default class PointPlot extends Plot {
 
-    PIXEL_PADDING = 10;
+    protected PIXEL_PADDING = 10;
 
     public draw(data: DataForPlot): void {
         const series = data.series as MultiSeriePointData[];

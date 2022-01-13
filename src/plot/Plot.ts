@@ -4,8 +4,8 @@ import { DataForPlot } from "./types";
 
 export default abstract class Plot {
 
-    readonly ctx: CanvasRenderingContext2D;
-    plotKit: PlotKit;
+    protected readonly ctx: CanvasRenderingContext2D;
+    protected plotKit: PlotKit;
 
     constructor(ctx: CanvasRenderingContext2D, type: string) {
         this.ctx = ctx;

@@ -4,7 +4,7 @@ import { DataForPlot, PiePartData } from "./../types";
 
 export default class PiePlot extends Plot {
 
-    readonly RADIUS_DIVIDER = 2.5;
+    protected readonly RADIUS_DIVIDER = 2.5;
 
     draw(data: DataForPlot): void {
         const series = data.series as SingleSerieData[];

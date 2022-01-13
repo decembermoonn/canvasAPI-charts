@@ -4,9 +4,8 @@ import { DataForPlot } from "./../types";
 
 export default class BarPlot extends Plot {
 
-    readonly ctx: CanvasRenderingContext2D;
-    readonly COL_SPACE_SIZE = 0.75;
-    readonly VALUE_BOTTOM_PADDING = 4;
+    protected readonly COL_SPACE_SIZE = 0.75;
+    protected readonly VALUE_BOTTOM_PADDING = 4;
 
     draw(data: DataForPlot): void {
         const labels = data.dataLabels;
