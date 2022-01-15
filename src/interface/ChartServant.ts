@@ -4,13 +4,11 @@ import { Chart } from "../model/Chart";
 import { PieChart } from "../model/charts/PieChart";
 import { PointChart } from "../model/charts/PointChart";
 import { LineChart } from "../model/charts/LineChart";
-import { HistogramChart } from "../model/charts/HistogramChart";
 import { AreaChart } from "../model/charts/AreaChart";
 
 const typeToClassPairs = {
     "pie": PieChart,
     "bar": BarChart,
-    "histogram": HistogramChart,
     "points": PointChart,
     "line": LineChart,
     "area": AreaChart

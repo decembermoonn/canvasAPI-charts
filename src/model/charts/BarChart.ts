@@ -3,7 +3,7 @@ import ChartUtils from "../utils";
 import { MultiChart } from "../MultiChart";
 
 export class BarChart extends MultiChart {
-    protected dataLabels: string[];
+    protected dataLabels: string[] = [];
     protected override seriesData: MultiSerieData[];
 
     public set X(labels: string[]) {
