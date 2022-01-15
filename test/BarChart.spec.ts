@@ -8,11 +8,10 @@ class MockBarChart extends BarChart {
 
 describe('BarChart methods and properties working properly', () => {
     let barChart: MockBarChart;
-    let canvas;
 
     before(() => {
         mockGetContext();
-        canvas = document.createElement('canvas');
+        const canvas = document.createElement('canvas');
         barChart = new MockBarChart(canvas, 'bar');
     });
 
