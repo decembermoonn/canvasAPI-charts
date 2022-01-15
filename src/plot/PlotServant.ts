@@ -8,7 +8,6 @@ import PointPlot from "./plots/PointPlot";
 const typeToClassPairs = {
     "pie": PiePlot,
     "bar": BarPlot,
-    "histogram": BarPlot,
     "points": PointPlot,
     "line": LinePlot,
     "area": AreaPlot

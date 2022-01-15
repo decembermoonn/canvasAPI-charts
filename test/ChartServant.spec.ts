@@ -3,19 +3,14 @@ import 'mocha';
 import chartServant from '../src/interface/ChartServant';
 import { BarChart } from '../src/model/charts/BarChart';
 import { PieChart } from '../src/model/charts/PieChart';
+import mockGetContext from './utils/mockGetContext';
 
 describe('Chart Servant (interface) working properly', () => {
     let canvas;
 
     before(() => {
+        mockGetContext();
         canvas = document.createElement('canvas');
-        // Needed to mock getContext with simple function,
-        // to prevent Mocha from spawning errors.
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        window.HTMLCanvasElement.prototype.getContext = (): void => {
-            console.warn("Using getContext Mock");
-        };
     });
 
     it('Should initlalize Pie Chart model', () => {

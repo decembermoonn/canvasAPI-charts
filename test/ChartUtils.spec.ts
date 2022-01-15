@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import utils from '../src/model/utils';
 
-describe('Util functions working properly', () => {
+describe('Chart util functions working properly', () => {
     it('Slice and fill properly', () => {
         const numbers = utils.sliceOrFill([1, 2, 3], 5, 8);
         expect(numbers).deep.eq([1, 2, 3, 8, 8]);
