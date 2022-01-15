@@ -17,6 +17,8 @@ export class PieChart extends Chart {
             throw Error('Values on "X" axis must be specified before setting "Y" values.');
         const mappedValues = ChartUtils.sliceOrFill(values, length);
         this.seriesData.map((option, index) => {
+            if (mappedValues[index] < 0)
+                throw Error("Pie Chart cannot have negative values!");
             option.value = mappedValues[index];
         });
     }
