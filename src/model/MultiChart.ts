@@ -1,5 +1,5 @@
 import { Chart } from "./Chart";
-import { MultiChartOptions } from "./types";
+import { ChartOptions, MultiChartOptions } from "./types";
 
 export abstract class MultiChart extends Chart {
 
@@ -12,10 +12,11 @@ export abstract class MultiChart extends Chart {
         }
     }
 
-    protected setDefaultChartOptions(): void {
+    protected setDefaultChartOptions(): ChartOptions {
         super.setDefaultChartOptions();
         Object.assign(this.chartOptions, {
             showLabels: true
         });
+        return this.chartOptions;
     }
 }

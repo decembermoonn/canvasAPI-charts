@@ -146,9 +146,17 @@ export default class PlotKit {
     private drawTitle(title: string, titleFrame: FrameRect): void {
         const { ctx } = this;
         const { x, y, w, h } = titleFrame;
+
         ctx.font = `${Math.floor(h / 2)}px sans-serif`;
-        const textMeasurement = ctx.measureText(title);
-        const textWidth = textMeasurement.width;
+        let textMeasurement = ctx.measureText(title);
+        let textWidth = textMeasurement.width;
+
+        if (textWidth > w) {
+            ctx.font = `${Math.floor((h / 2) * (w / textWidth))}px sans-serif`;
+            textMeasurement = ctx.measureText(title);
+            textWidth = textMeasurement.width;
+        }
+
         const textHeight = textMeasurement.actualBoundingBoxAscent;
         const textPositionX = x + w / 2 - textWidth / 2;
         const textPositionY = y + h / 2 + textHeight / 2;

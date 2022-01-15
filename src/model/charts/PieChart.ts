@@ -1,4 +1,4 @@
-import { SingleSerieData } from "../types";
+import { ChartOptions, SingleSerieData } from "../types";
 import { Chart } from "../Chart";
 import ChartUtils from "../utils";
 
@@ -19,6 +19,14 @@ export class PieChart extends Chart {
         this.seriesData.map((option, index) => {
             option.value = mappedValues[index];
         });
+    }
+
+    protected setDefaultChartOptions(): ChartOptions {
+        const chartOpts = super.setDefaultChartOptions();
+        Object.assign(chartOpts, {
+            precentageValues: false
+        });
+        return chartOpts;
     }
 
     protected getDefaultSerieObject(label: string): SingleSerieData {

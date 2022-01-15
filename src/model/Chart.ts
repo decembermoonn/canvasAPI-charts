@@ -27,19 +27,20 @@ export abstract class Chart {
         this.plot = plotServant(this.context, chartType);
     }
 
-    protected setDefaultChartOptions(): void {
+    protected setDefaultChartOptions(): ChartOptions {
         this.chartOptions = {
             title: 'Title',
             showTitle: true,
             showLegend: false,
         };
+        return this.chartOptions;
     }
 
     protected getDefaultSerieObjectBase(): SerieDataCommon {
         return {
             name: `unnamed`,
             options: {
-                color: Math.floor(Math.random() * 16777215).toString(16),
+                color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
                 showValue: false,
                 showOnLegend: false,
             }
