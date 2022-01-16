@@ -48,7 +48,7 @@ export default class PlotKit {
         }
 
         if (chartOptions.showLegend) {
-            const legendFrame = this.getLegendFrame(emptyFrame);
+            const legendFrame = this.getLegendFrame(emptyFrame, series.length);
             frames.push(legendFrame);
             this.drawLegend(series, legendFrame);
             emptyFrame = this.cutFrames(emptyFrame, legendFrame);
@@ -70,9 +70,10 @@ export default class PlotKit {
         return this.getFrame(x, y, w, hSpace, 'title');
     }
 
-    private getLegendFrame(frame: FrameRect): FrameRect {
+    private getLegendFrame(frame: FrameRect, serieCount: number): FrameRect {
         const { x, y, w, h } = frame;
-        const hSpace = h * this.LEGEND_AREA_MULTIPIER;
+        const delta = serieCount >= 10 ? Math.sqrt((serieCount - 10) / 10) : 0;
+        const hSpace = h * (0.1 + delta * this.LEGEND_AREA_MULTIPIER);
         return this.getFrame(x, y + h - hSpace, w, hSpace, 'legend');
     }
 
@@ -217,7 +218,7 @@ export default class PlotKit {
     protected performDrawSingleSerieLegend(boxFrameAndTextCoords: BoxFrameAndTextCoords, serie: SerieDataCommon): void {
         if (["bar", "pie", "area"].includes(this.plotType))
             this.patternTools.performDrawSingleSerieLegend(boxFrameAndTextCoords, serie);
-        if (this.plotType === "point")
+        if (this.plotType === "points")
             this.pointTools.performDrawSingleSerieLegend(boxFrameAndTextCoords, serie);
         if (this.plotType === "line") {
             this.lineTools.performDrawSingleSerieLegend(boxFrameAndTextCoords, serie);
