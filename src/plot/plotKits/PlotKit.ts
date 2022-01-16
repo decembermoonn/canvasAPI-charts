@@ -14,7 +14,7 @@ export default class PlotKit {
     readonly LEGEND_AREA_MULTIPIER = 0.1;
     readonly LEGEND_PADDING_MULTIPIER = 1;
     readonly SERIE_LEGEND_PER_LEVEL = 5;
-    readonly SERIE_PADDING_MULTIPIER = 0.6;
+    readonly SERIE_PADDING_MULTIPIER = 0.15;
     readonly LABELS_AREA_MULTIPIER = 0.05;
     readonly MOST_TICKS = 10;
     readonly ctx: CanvasRenderingContext2D;
@@ -177,29 +177,33 @@ export default class PlotKit {
                 y: legendFrame.y + frameH * (Math.floor(i / this.SERIE_LEGEND_PER_LEVEL)),
                 w: frameW,
                 h: frameH
-            }, series[i]);
+            }, series[i], series.length);
         }
     }
 
-    protected drawSingleSerieLegend(frame: FrameRect, serie: SerieDataCommon): void {
-        const boxFrameAndTextCoords = this.prepareSingleSerieLegend(frame, serie);
+    protected drawSingleSerieLegend(frame: FrameRect, serie: SerieDataCommon, serieCount: number): void {
+        const boxFrameAndTextCoords = this.prepareSingleSerieLegend(frame, serie, serieCount);
         this.performDrawSingleSerieLegend(boxFrameAndTextCoords, serie);
     }
 
-    protected prepareSingleSerieLegend(frame: FrameRect, serie: SerieDataCommon): BoxFrameAndTextCoords {
+    protected prepareSingleSerieLegend(frame: FrameRect, serie: SerieDataCommon, serieCount: number): BoxFrameAndTextCoords {
         const { ctx } = this;
         const { name } = serie;
 
         const sEdgeOuterBox = Math.min(frame.w, frame.h);
-        const sEdgeInnerBox = sEdgeOuterBox * this.SERIE_PADDING_MULTIPIER;
-        const sPadding = (sEdgeOuterBox - sEdgeInnerBox) / 2;
+        const sPadding = sEdgeOuterBox * this.SERIE_PADDING_MULTIPIER;
+        const sEdgeInnerBox = sEdgeOuterBox - 2 * sPadding;
 
-        ctx.font = `${Math.floor(sEdgeOuterBox / 3)}px sans-serif`;
+        const moreThanOneLevel = serieCount > this.SERIE_LEGEND_PER_LEVEL;
+        const fontDivider = moreThanOneLevel ? 2 : 3;
+        ctx.font = `${Math.floor(sEdgeOuterBox / fontDivider)}px sans-serif`;
+
         const { width, actualBoundingBoxAscent } = ctx.measureText(name);
-        const wboxAndText = sEdgeOuterBox + width - sPadding;
+        const overlap = width > frame.w - sEdgeOuterBox;
+        const boxAndTextW = width + sEdgeOuterBox;
 
         const boxFrame = {
-            x: frame.x + (frame.w - wboxAndText) / 2,
+            x: frame.x + (overlap || moreThanOneLevel ? sPadding : (frame.w - boxAndTextW) / 2),
             y: frame.y + sPadding,
             w: sEdgeInnerBox,
             h: sEdgeInnerBox
@@ -207,7 +211,7 @@ export default class PlotKit {
         const textCoords = {
             x: boxFrame.x + sEdgeInnerBox + sPadding,
             y: boxFrame.y + (sEdgeInnerBox / 2) + (actualBoundingBoxAscent / 2),
-            maxW: wboxAndText - boxFrame.w - sPadding
+            maxW: overlap || moreThanOneLevel ? frame.w - sEdgeOuterBox : (frame.w - (frame.w - boxAndTextW) / 2 - sEdgeOuterBox)
         };
         return {
             boxFrame,
