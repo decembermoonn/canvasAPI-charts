@@ -131,21 +131,30 @@ export default class PlotKit {
         this.ctx.save();
 
         // If shrinking didn't work - its time to rotate all labels 90 degrees
-        const loopReached = iLoop === MAX_LOOP;
-        if (loopReached) {
-            labelFrameH = measurement.width;
+        const rot = iLoop === MAX_LOOP;
+        const ROTATED_HEIGHT_ADDITIONAL_MULTIP = 0.1;
+        if (rot) {
+            labelFrameH = (1 + ROTATED_HEIGHT_ADDITIONAL_MULTIP) * measurement.width;
             width = measurement.actualBoundingBoxAscent;
-            this.ctx.rotate(Math.PI / 2);
         }
 
         // Draw labels
-        const xAreaBeginning = (plotFrame.x + oyWidth) + (areaWidth - width) / 2;
-        const yArea = plotFrame.y + plotFrame.h - (labelFrameH - measurement.actualBoundingBoxAscent) / 2;
+        const xAreaAdditional = (areaWidth - width) / 2;
+        const yAreaAdditional = (labelFrameH - measurement.actualBoundingBoxAscent) / 2;
+
+        const xAreaBeginning = (plotFrame.x + oyWidth)
+            + (rot ? 2 * xAreaAdditional : xAreaAdditional);
+        const yArea = plotFrame.y + plotFrame.h
+            - (rot ? labelFrameH * ROTATED_HEIGHT_ADDITIONAL_MULTIP * 0.5 : yAreaAdditional);
+        
         this.ctx.translate(xAreaBeginning, yArea);
+        if (rot) this.ctx.rotate(-Math.PI / 2);
+        
         for (let a = 0; a < barAreas; a++) {
             this.ctx.fillStyle = 'black';
             this.ctx.fillText(labels[a], 0, 0);
-            this.ctx.translate(areaWidth, 0);
+            const translation = rot ? [0, areaWidth] : [areaWidth, 0];
+            this.ctx.translate(translation[0], translation[1]);
         }
 
         // Restore default context state
