@@ -17,19 +17,26 @@ export default class {
 
     /**
      * Merge properties from 'newOptions' to 'actualOptions' (right-join like).
-     * @param newOptions - some option properties for type T.
-     * @param actualOptions - all option properties for type T.
+     * @param newOptions - object with some options.
+     * @param actualOptions - object with all options.
     */
-    public static mergeRight<T>(newOptions: Partial<T>, actualOptions: T): void {
+    public static mergeRight<T extends Record<string, unknown>>(newOptions: Partial<T>, actualOptions: T): void {
         const keys = Object.keys(actualOptions);
         Object.entries(newOptions).forEach(pair => {
             const key = pair[0];
             if (keys.includes(key)) {
                 const value = pair[1];
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment 
-                // @ts-ignore
-                actualOptions[key] = value;
+                actualOptions[key as keyof T] = value;
             }
         });
+    }
+
+    /**
+     * Check if array is array of arrays and return answer.
+     * @param arr - array or array of arrays
+     * @returns flag indicating whether arr is array of array or not
+    */
+    public static checkIfArrayOfArrays(arr: unknown[] | unknown[][]): arr is unknown[][] {
+        return Array.isArray(arr[0]);
     }
 }

@@ -1,16 +1,9 @@
-import { MultiSeriePointData, ContextSource, Point } from "../types";
-import PointPlot from "../../plot/LinePlot";
+import { MultiSeriePointData, Point } from "../types";
 import { MultiChart } from "../MultiChart";
 
 export class PointChart extends MultiChart {
 
-    seriesData: MultiSeriePointData[];
-    plot: PointPlot;
-
-    constructor(source: ContextSource) {
-        super(source);
-        this.plot = new PointPlot(this.context);
-    }
+    protected override seriesData: MultiSeriePointData[];
 
     public set points(points: Point[]) {
         const count = this.seriesData.filter((serie) => serie.name.startsWith('serie')).length;
@@ -42,22 +35,24 @@ export class PointChart extends MultiChart {
         }
     }
 
-    private getDefaultSerieObject(points: Point[], index: number): MultiSeriePointData {
-        return {
-            name: `serie${index}`,
-            points,
-            options: {
-                color: Math.floor(Math.random() * 16777215).toString(16),
-                showValue: false,
-                showOnLegend: false,
-                dash: [],
-                dashWidth: 1,
-            }
-        };
+    protected getDefaultSerieObject(points: Point[], index: number): MultiSeriePointData {
+        const obj = super.getDefaultSerieObjectBase();
+        obj.name = `serie${index}`;
+        Object.assign(obj, {
+            points
+        });
+        Object.assign(obj.options, {
+            pointShape: undefined,
+            pointSize: 0,
+        });
+        return obj as MultiSeriePointData;
     }
 
     public draw(): void {
         this.seriesData.forEach((data) => data.points.sort((p1, p2) => (p1.x - p2.x)));
-        this.plot.drawPoints(this.seriesData, this.chartOptions);
+        super.draw({
+            series: this.seriesData,
+            chartOptions: this.chartOptions
+        });
     }
 }

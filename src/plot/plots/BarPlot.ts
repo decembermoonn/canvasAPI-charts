@@ -1,35 +1,49 @@
-import { ChartOptions, MultiSerieData, SerieOptionsArea } from "../model/types";
-import AreaPlotKit from "./plotKits/AreaPlotKit";
-import { applyShapeOrColor } from "./utils";
+import { MultiChartOptions, MultiSerieData, SerieOptionsShape } from "../../model/types";
+import { getTickInfo } from "../utils";
+import Plot from "./../Plot";
+import { DataForPlot } from "./../types";
 
-export default class BarPlot {
-    readonly ctx: CanvasRenderingContext2D;
-    readonly plotKit: AreaPlotKit;
-    readonly COL_SPACE_SIZE = 0.75;
-    readonly VALUE_BOTTOM_PADDING = 4;
+export default class BarPlot extends Plot {
 
-    constructor(ctx: CanvasRenderingContext2D) {
-        this.ctx = ctx;
-        this.plotKit = new AreaPlotKit(ctx);
-    }
+    protected readonly COL_SPACE_SIZE = 0.75;
+    protected readonly VALUE_BOTTOM_PADDING = 4;
 
-    drawBars(labels: string[], series: MultiSerieData[], chartOptions: ChartOptions): void {
-        const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
-        let plotFrame = frames.find(frame => frame.id === 'content');
-        const labelFrame = frames.find(frame => frame.id === 'labels');
-        const maxValueFromSeries = Math.max(...series.map(serie => Math.max(...serie.values)));
-        const { tickCount, tickHeight, tickFrame } = this.plotKit.drawGridHorizontalLines(plotFrame, 0, maxValueFromSeries);
-        plotFrame = tickFrame;
-        const hSpaceBetweenTicks = plotFrame.h / ((tickCount + 1) * tickHeight);
+    draw(data: DataForPlot): void {
+        const MIN_VAL = 0;
+        const Y_LABEL_FONT = 18;
+        const series = data.series as MultiSerieData[];
+        const chartOptions = data.chartOptions as MultiChartOptions;
 
+        const labels = data.dataLabels;
         const serieCount = series.length;
         const barAreas = labels.length;
 
-        const barAreaWidth = plotFrame.w / barAreas;
+        //get three main frames
+        let allFrames = this.plotKit.prepareChartForDrawing(chartOptions, series);
+        let plotFrame = allFrames.find(frame => frame.id === 'content');
+
+        //split content frame into two
+        const maxValueFromSeries = Math.max(...series.map(serie => Math.max(...serie.values)));
+        const tickInfo = getTickInfo(this.plotKit.MOST_TICKS, MIN_VAL, maxValueFromSeries);
+        const oYwidth = this.plotKit.getWidthOfValuesPane(tickInfo, MIN_VAL, Y_LABEL_FONT);
+        const contentWidth = plotFrame.w - oYwidth;
+
+        //having final 'w':
+        const barAreaWidth = contentWidth / barAreas;
         const paddingWidth = barAreaWidth * (1 - this.COL_SPACE_SIZE);
         const barAreaWidthPadded = barAreaWidth - 2 * paddingWidth;
-
         const oneColumnWidth = barAreaWidthPadded / serieCount;
+
+        if (chartOptions.showLabels) {
+            const frames = this.plotKit.getLabelsFrameFilled(plotFrame, oYwidth, labels, barAreaWidth, barAreas);
+            allFrames = allFrames.filter(frame => frame.id !== 'content');
+            allFrames.push(...frames);
+        }
+
+        const { tickCount, tickHeight } = tickInfo;
+        plotFrame = allFrames.find(frame => frame.id === 'content');
+        plotFrame = this.plotKit.drawGridHorizontalLines(plotFrame, tickInfo, MIN_VAL, Y_LABEL_FONT);
+        const hSpaceBetweenTicks = plotFrame.h / ((tickCount + 1) * tickHeight);
 
         this.ctx.fillStyle = 'black';
         const yColumnBottom = plotFrame.y + plotFrame.h;
@@ -38,15 +52,6 @@ export default class BarPlot {
 
         for (let a = 0; a < barAreas; a++) {
             const xAreaBeginning = plotFrame.x + a * barAreaWidth + paddingWidth;
-            if (chartOptions.showLabels) {
-                this.ctx.font = `${labelFrame.h}px sans-serif`;
-                this.ctx.fillStyle = 'black';
-                const { width } = this.ctx.measureText(labels[a]);
-                const xLabel = xAreaBeginning + (barAreaWidthPadded / 2) - width / 2;
-                const yLabel = plotFrame.y + plotFrame.h + labelFrame.h * 0.8;
-                this.ctx.fillText(labels[a], xLabel, yLabel, barAreaWidth);
-                this.ctx.font = `${pxFontForValue}px sans-serif`;
-            }
             for (let s = 0; s < serieCount; s++) {
                 const xColumn = xAreaBeginning + s * oneColumnWidth;
                 const hColumn = series[s].values[a] * hSpaceBetweenTicks;
@@ -56,14 +61,14 @@ export default class BarPlot {
                     yColumn,
                     oneColumnWidth,
                     hColumn,
-                    series[s].options as SerieOptionsArea,
+                    series[s].options as SerieOptionsShape,
                     series[s].values[a]
                 );
             }
         }
     }
 
-    private drawBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptionsArea, value: number): void {
+    private drawBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptionsShape, value: number): void {
         this.fillBar(xpos, ypos, width, height, options);
         const { showValue, borderWidth } = options;
         if (borderWidth)
@@ -72,9 +77,9 @@ export default class BarPlot {
             this.addBarValue(xpos, ypos, width, value);
     }
 
-    private fillBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptionsArea): void {
+    private fillBar(xpos: number, ypos: number, width: number, height: number, options: SerieOptionsShape): void {
         const { color, shape } = options;
-        applyShapeOrColor(this.ctx, shape, color);
+        this.plotKit.patternTools.applyShapeOrColor(this.ctx, shape, color);
         this.ctx.fillRect(xpos, ypos, width, height);
     }
 

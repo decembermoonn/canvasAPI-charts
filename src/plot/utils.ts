@@ -1,5 +1,3 @@
-import { draw } from "patternomaly";
-import { SerieOptionsArea } from "../model/types";
 import { TickInfo } from "./types";
 
 /**
@@ -29,7 +27,7 @@ export function resizeCanvasToDisplaySize(canvas: HTMLCanvasElement): boolean {
 */
 export function getTickInfo(mostTicks: number, min = 0, max = 0): TickInfo {
     const diff = Math.ceil(max - min);
-    
+
     const minimum = diff / mostTicks;
     const magnitude = Math.pow(10, Math.floor(Math.log10(minimum)));
     const residual = minimum / magnitude;
@@ -43,13 +41,6 @@ export function getTickInfo(mostTicks: number, min = 0, max = 0): TickInfo {
     };
 }
 
-export function applyShapeOrColor(ctx: CanvasRenderingContext2D, shape: SerieOptionsArea['shape'], color: string): void {
-    ctx.fillStyle = color;
-    if (shape != undefined) {
-        try {
-            ctx.fillStyle = draw(shape, color, 'black');
-        } catch {
-            console.warn(`${shape} is invalid shape. See documentation.`);
-        }
-    }
+export function parseFloatWithoutPadding(val: number, fix: number): number {
+    return parseFloat(val.toFixed(fix));
 }

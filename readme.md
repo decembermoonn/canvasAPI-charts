@@ -1,14 +1,21 @@
-# Importing 
-Create bundle via:
+# Summary
+`canvas2d-charts` is very simple library used for plotting. It supports six different types of charts, which are configurable according to Your needs. For example, you might set different patterns for charts in order to make them accessible to color-blinded people.
 
-```bash
-npm run build
+# Installation:
+## Downloading:
+If you use npm (for example in node.js application) then download package simply by using:
 ```
-
-When using ES6 simply add:
-
+npm install canvas2d-charts
 ```
-import Drawing from '../dist/bundle.js';
+If you don't use npm, then you might get package bundle from [GitHub repository](https://github.com/decembermoonn/canvasAPI-charts). It is located in `dist` folder. You may also download package source code and bundle it by yourself using any bundler (for example Webpack).
+
+<strong>Caution!</strong> There is no official support for CDN and it won't be included.
+## Importing:
+There are several approaches for importing this module, depending on used module resolution system (CommonJS, AMD, UMD, SystemJS etc...)
+
+When using ES6 module resolution simply add:
+```
+import draw from '.../dist/bundle.js';
 ```
 
 # Usage:
@@ -97,21 +104,59 @@ Each serie might be configured via following method:
 drawing.setSerieOptions({
         color: string,
         showValue: boolean,
+        showOnLegend: boolean
+    }, serieNamesArray);
+```
+`serieNamesArray`:
+* May be ommited, which will cause applying settings to all series
+* May be ***string[]*** of names of series which settings should be applied to.
+
+Passed object might consist of:
+* `color` - color of serie
+* `showValue` - flag indicating whether value of serie should be visible
+* `showOnLegend` - flag indicating whether serie should be visible on legend
+
+### Additional properties
+You can provide additional properties depending on chart.
+
+For pie, bar and histogram:
+```js
+drawing.setSerieOptions({
         borderWidth: number,
-        showOnLegend: boolean,
         shape: string
     }, serieNamesArray);
 ```
-Where object might consist of:
-* `color` - color of serie
-* `showValue` - flag indicating whether value of serie should be visible
 * `borderWidth` - width of serie stroke line
-* `showOnLegend` - flag indicating whether serie should be visible on legend
 * `shape` - pattern of serie which might be one of [those described there](https://github.com/ashiguruma/patternomaly/blob/5ca857ae7888aacaac9ecfc43f6b3e9859e40645/README.md)
 
-And `serieNamesArray`:
-* May be ommited, which will cause applying settings to all series
-* May be ***string[]*** of names of series which settings should be applied to.
+For point:
+```js
+drawing.setSerieOptions({
+        pointSize: number,
+        pointShape: string
+    }, serieNamesArray);
+```
+* `pointSize` - point size in pixels
+* `pointShape` - pattern of points, possible values are the same as for 'shape' for pie, bar and histogram charts.
+
+For line:
+```js
+drawing.setSerieOptions({
+        dash: string | number[],
+        dashWidth: number
+    }, serieNamesArray);
+```
+* `dash` - may be one of:
+    - 'l'  
+    - 'p'  
+    - 'ls'
+    - 'lls'
+    - 'lp'
+    - 'lppp'
+    - 'lpsp'
+    - [] for solid line
+    - an array of numbers specifying dash pattern [as described there](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash)
+* `dashWidth` - width of dash
 
 Upon supplying charts with OX and OY data series are created with default names:
 * In case of *Pie Chart* serie names are the same as those supplied as OX data

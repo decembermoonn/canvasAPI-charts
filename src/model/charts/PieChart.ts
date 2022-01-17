@@ -1,17 +1,10 @@
-import { SingleSerieData, ContextSource } from "../types";
+import { ChartOptions, SingleSerieData } from "../types";
 import { Chart } from "../Chart";
 import ChartUtils from "../utils";
-import PiePlot from "../../plot/PiePlot";
 
 export class PieChart extends Chart {
 
-    seriesData: SingleSerieData[];
-    plot: PiePlot;
-
-    constructor(source: ContextSource) {
-        super(source);
-        this.plot = new PiePlot(this.context);
-    }
+    protected override seriesData: SingleSerieData[];
 
     public set X(labels: string[]) {
         this.seriesData =
@@ -24,25 +17,37 @@ export class PieChart extends Chart {
             throw Error('Values on "X" axis must be specified before setting "Y" values.');
         const mappedValues = ChartUtils.sliceOrFill(values, length);
         this.seriesData.map((option, index) => {
+            if (mappedValues[index] < 0)
+                throw Error("Pie Chart cannot have negative values!");
             option.value = mappedValues[index];
         });
     }
 
-    private getDefaultSerieObject(label: string): SingleSerieData {
-        return {
-            value: 0,
-            name: label,
-            options: {
-                color: Math.floor(Math.random() * 16777215).toString(16),
-                showValue: false,
-                showOnLegend: false,
-                borderWidth: 0,
-                shape: undefined,
-            }
-        };
+    protected setDefaultChartOptions(): ChartOptions {
+        const chartOpts = super.setDefaultChartOptions();
+        Object.assign(chartOpts, {
+            precentageValues: false
+        });
+        return chartOpts;
+    }
+
+    protected getDefaultSerieObject(label: string): SingleSerieData {
+        const obj = super.getDefaultSerieObjectBase();
+        obj.name = label;
+        Object.assign(obj, {
+            value: 0
+        });
+        Object.assign(obj.options, {
+            borderWidth: 1,
+            shape: undefined,
+        });
+        return obj as SingleSerieData;
     }
 
     public draw(): void {
-        this.plot.drawPie(this.seriesData, this.chartOptions);
+        super.draw({
+            series: this.seriesData,
+            chartOptions: this.chartOptions
+        });
     }
 }
