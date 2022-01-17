@@ -4,8 +4,6 @@ import { DataForSerieDrawing } from "../types";
 
 export default class AreaPlot extends LinePlot {
 
-    protected override PIXEL_PADDING = 0;
-
     protected override performDrawing(data: DataForSerieDrawing): void {
         const { series, mappers, labelFrame, yMinForSeries } = data;
         const bottom = mappers.yFunc(yMinForSeries);

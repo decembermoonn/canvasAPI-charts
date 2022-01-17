@@ -1,6 +1,6 @@
 import { ChartOptions, MultiChartOptions, SerieDataCommon } from "../../model/types";
 import { BoxFrameAndTextCoords, FrameRect, TickInfo } from "../types";
-import { getTickInfo } from "../utils";
+import { getTickInfo, parseFloatWithoutPadding } from "../utils";
 import LinePlotTools from "./LinePlotTools";
 import PatternPlotTools from "./PatternPlotTools";
 import PointPlotTools from "./PointPlotTools";
@@ -106,7 +106,11 @@ export default class PlotKit {
     private measureTickTextMaxWidth(tickCount: number, tickHeight: number, min: number): number {
         let maxMeasurement = 0;
         for (let i = 1; i <= tickCount + 1; i++) {
-            const measurement = this.ctx.measureText(String(min + (tickCount + 1 - i) * tickHeight)).width;
+            const measurement = this.ctx.measureText(
+                String(
+                    parseFloatWithoutPadding(min + (tickCount + 1 - i) * tickHeight, 4)
+                )
+            ).width;
             if (measurement > maxMeasurement)
                 maxMeasurement = measurement;
         }
@@ -122,7 +126,7 @@ export default class PlotKit {
         const maxWidth = this.measureTickTextMaxWidth(tickCount, tickHeight, min);
         for (let i = 1; i <= tickCount + 1; i++) {
             const y = frame.y + singleH * i;
-            const val = String(min + (tickCount + 1 - i) * tickHeight);
+            const val = String(parseFloatWithoutPadding(min + (tickCount + 1 - i) * tickHeight, 4));
             const { width } = ctx.measureText(val);
             ctx.fillText(val, frame.x + (maxWidth - width), y);
             ctx.beginPath();

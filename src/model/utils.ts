@@ -30,4 +30,13 @@ export default class {
             }
         });
     }
+
+    /**
+     * Check if array is array of arrays and return answer.
+     * @param arr - array or array of arrays
+     * @returns flag indicating whether arr is array of array or not
+    */
+    public static checkIfArrayOfArrays(arr: unknown[] | unknown[][]): arr is unknown[][] {
+        return Array.isArray(arr[0]);
+    }
 }

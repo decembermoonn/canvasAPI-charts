@@ -40,3 +40,7 @@ export function getTickInfo(mostTicks: number, min = 0, max = 0): TickInfo {
         tickCount
     };
 }
+
+export function parseFloatWithoutPadding(val: number, fix: number): number {
+    return parseFloat(val.toFixed(fix));
+}

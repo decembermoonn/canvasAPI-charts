@@ -4,7 +4,7 @@ import { DataForPlot, DataForSerieDrawing, FrameRect, MinMax, ValueToPixelMapper
 
 export default class PointPlot extends Plot {
 
-    protected PIXEL_PADDING = 10;
+    protected readonly PIXEL_PADDING = 10;
 
     public draw(data: DataForPlot): void {
         const series = data.series as MultiSeriePointData[];
@@ -52,7 +52,8 @@ export default class PointPlot extends Plot {
             serie.points.forEach(point => {
                 const mappedPoint = this.mapSpacePointToPixelPoint(point, mappers.xFunc, mappers.yFunc);
                 this.plotKit.pointTools.performDrawPoint(mappedPoint, serie.options as SerieOptionsPoint);
-                this.drawValueForPoint(point.x, mappedPoint.x, labelFrame);
+                if (serie.options.showValue)
+                    this.drawValueForPoint(point.x, mappedPoint.x, labelFrame);
             });
         });
     }
@@ -118,6 +119,7 @@ export default class PointPlot extends Plot {
     protected drawValueForPoint(xValue: number, xPixelPos: number, labelFrame: FrameRect): void {
         const text = String(xValue);
         const { width, actualBoundingBoxAscent } = this.ctx.measureText(text);
+        this.ctx.fillStyle = 'black';
         this.ctx.fillText(String(xValue), xPixelPos - width / 2, labelFrame.y + labelFrame.h / 2 + actualBoundingBoxAscent / 2);
     }
 }

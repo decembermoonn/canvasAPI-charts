@@ -10,7 +10,13 @@ export class BarChart extends MultiChart {
         this.dataLabels = labels;
     }
 
-    public set Y(series: number[][]) {
+    public set Y(series: number[][] | number[]) {
+        if (!ChartUtils.checkIfArrayOfArrays(series)) {
+            this.seriesData = series.map(
+                (serie, index) => this.getDefaultSerieObject([serie], index)
+            );
+            return;
+        }
         const { length } = this.dataLabels;
         if (!length)
             throw Error('Values on "X" axis must be specified before setting "Y" values.');

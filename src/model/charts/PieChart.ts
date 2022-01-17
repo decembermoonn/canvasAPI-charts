@@ -38,7 +38,7 @@ export class PieChart extends Chart {
             value: 0
         });
         Object.assign(obj.options, {
-            borderWidth: 0,
+            borderWidth: 1,
             shape: undefined,
         });
         return obj as SingleSerieData;
