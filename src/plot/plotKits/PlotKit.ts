@@ -139,14 +139,13 @@ export default class PlotKit {
         }
 
         // Draw labels
-        const xAreaBeginning = (plotFrame.x + oyWidth);
+        const xAreaBeginning = (plotFrame.x + oyWidth) + (areaWidth - width) / 2;
+        const yArea = plotFrame.y + plotFrame.h - (labelFrameH - measurement.actualBoundingBoxAscent) / 2;
+        this.ctx.translate(xAreaBeginning, yArea);
         for (let a = 0; a < barAreas; a++) {
-            const xArea = xAreaBeginning + a * areaWidth;
             this.ctx.fillStyle = 'black';
-            //this.ctx.translate
-            const xLabel = xArea + (areaWidth - width) / 2;
-            const yLabel = plotFrame.y + plotFrame.h - (labelFrameH - measurement.actualBoundingBoxAscent) / 2;
-            this.ctx.fillText(labels[a], xLabel, yLabel);
+            this.ctx.fillText(labels[a], 0, 0);
+            this.ctx.translate(areaWidth, 0);
         }
 
         // Restore default context state
