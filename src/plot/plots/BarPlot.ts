@@ -25,7 +25,7 @@ export default class BarPlot extends Plot {
         //split content frame into two
         const maxValueFromSeries = Math.max(...series.map(serie => Math.max(...serie.values)));
         const tickInfo = getTickInfo(this.plotKit.MOST_TICKS, MIN_VAL, maxValueFromSeries);
-        const oYwidth = this.plotKit.yGetAxisTextMaxWidth(tickInfo, MIN_VAL, Y_LABEL_FONT);
+        const oYwidth = this.plotKit.getWidthOfValuesPane(tickInfo, MIN_VAL, Y_LABEL_FONT);
         const contentWidth = plotFrame.w - oYwidth;
 
         //having final 'w':
@@ -35,14 +35,14 @@ export default class BarPlot extends Plot {
         const oneColumnWidth = barAreaWidthPadded / serieCount;
 
         if (chartOptions.showLabels) {
-            const frames = this.plotKit.getLabelsFrameFilled(plotFrame, contentWidth, oYwidth, labels, barAreaWidth, barAreas);
+            const frames = this.plotKit.getLabelsFrameFilled(plotFrame, oYwidth, labels, barAreaWidth, barAreas);
             allFrames = allFrames.filter(frame => frame.id !== 'content');
             allFrames.push(...frames);
         }
 
         const { tickCount, tickHeight } = tickInfo;
         plotFrame = allFrames.find(frame => frame.id === 'content');
-        plotFrame = this.plotKit.drawGridHorizontalLinesNew(plotFrame, tickInfo, MIN_VAL, Y_LABEL_FONT);
+        plotFrame = this.plotKit.drawGridHorizontalLines(plotFrame, tickInfo, MIN_VAL, Y_LABEL_FONT);
         const hSpaceBetweenTicks = plotFrame.h / ((tickCount + 1) * tickHeight);
 
         this.ctx.fillStyle = 'black';

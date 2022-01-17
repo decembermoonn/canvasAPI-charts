@@ -1,6 +1,6 @@
-import { ChartOptions, MultiChartOptions, MultiSerieData, SerieDataCommon } from "../../model/types";
+import { ChartOptions, MultiChartOptions, SerieDataCommon } from "../../model/types";
 import { BoxFrameAndTextCoords, FrameRect, TickInfo } from "../types";
-import { getTickInfo, parseFloatWithoutPadding } from "../utils";
+import { parseFloatWithoutPadding } from "../utils";
 import LinePlotTools from "./LinePlotTools";
 import PatternPlotTools from "./PatternPlotTools";
 import PointPlotTools from "./PointPlotTools";
@@ -64,12 +64,6 @@ export default class PlotKit {
             emptyFrame = this.cutFrames(emptyFrame, legendFrame);
         }
 
-        // if ((chartOptions as MultiChartOptions).showLabels) {
-        //     const labelsFrame = this.getLabelsFrame(emptyFrame);
-        //     frames.push(labelsFrame);
-        //     emptyFrame = this.cutFrames(emptyFrame, labelsFrame);
-        // }
-
         frames.push(emptyFrame);
         return frames;
     }
@@ -87,11 +81,23 @@ export default class PlotKit {
         return this.getFrame(x, y + h - hSpace, w, hSpace, 'legend');
     }
 
+    /**
+     * Should be removed and instead getLabelsFrameFilled should be used
+     * But... No time for implementation...
+     * @returns label frame basic.
+     * @deprecated
+    */
+    public getBasicLabelsFrame(frame: FrameRect): FrameRect {
+        const { x, y, w, h } = frame;
+        const hSpace = h * this.LABELS_AREA_MULTIPIER;
+        return this.getFrame(x, y + h - hSpace, w, hSpace, 'labels');
+    }
+
     protected getFrame(x: number, y: number, w: number, h: number, id?: string): FrameRect {
         return { id, x, y, w, h };
     }
 
-    protected cutFrames(frame: FrameRect, cut: FrameRect): FrameRect {
+    public cutFrames(frame: FrameRect, cut: FrameRect): FrameRect {
         const h = frame.h === cut.h ? frame.h : frame.h - cut.h;
         const y = frame.y === cut.y ? frame.y + cut.h : frame.y;
         const { x, w, id } = frame;
@@ -100,14 +106,32 @@ export default class PlotKit {
         return { x, y, w, h, id };
     }
 
-    public yGetAxisTextMaxWidth(tickInfo: TickInfo, minVal: number, font: number): number {
+    /**
+     * Calculate width of OY values in content frame.
+     * @param tickInfo - previously calculated TickInfo
+     * @param minVal - value with which tickInfo begins
+     * @param font - font of OY values
+     * @returns width of OY values in content frame
+    */
+    public getWidthOfValuesPane(tickInfo: TickInfo, minVal: number, font: number): number {
         const { tickCount, tickHeight } = tickInfo;
         this.ctx.font = `${font}px sans-serif`;
         const yAxisTextMaxWidth = this.measureTickTextMaxWidth(tickCount, tickHeight, minVal);
         return yAxisTextMaxWidth;
     }
 
-    public getLabelsFrameFilled(plotFrame: FrameRect, contentWidth: number, oyWidth: number, labels: string[], areaWidth: number, barAreas: number): FrameRect[] {
+    /**
+     * Gets two frames from plot frame
+     * - Content frame (`content`),
+     * - Labels frame (`labels`),
+     * @param plotFrame
+     * @param oyWidth - width of calculated pane for OY values
+     * @param labels - array of labels
+     * @param areaWidth - width of single area
+     * @param areas - number of all areas
+     * @returns width of OY values in content frame
+    */
+    public getLabelsFrameFilled(plotFrame: FrameRect, oyWidth: number, labels: string[], areaWidth: number, areas: number): FrameRect[] {
         // Get initial frame height and longest label string
         const MAX_LOOP = 4;
         const num = Math.max(...labels.map(label => label.length));
@@ -146,11 +170,11 @@ export default class PlotKit {
             + (rot ? 2 * xAreaAdditional : xAreaAdditional);
         const yArea = plotFrame.y + plotFrame.h
             - (rot ? labelFrameH * ROTATED_HEIGHT_ADDITIONAL_MULTIP * 0.5 : yAreaAdditional);
-        
+
         this.ctx.translate(xAreaBeginning, yArea);
         if (rot) this.ctx.rotate(-Math.PI / 2);
-        
-        for (let a = 0; a < barAreas; a++) {
+
+        for (let a = 0; a < areas; a++) {
             this.ctx.fillStyle = 'black';
             this.ctx.fillText(labels[a], 0, 0);
             const translation = rot ? [0, areaWidth] : [areaWidth, 0];
@@ -178,32 +202,6 @@ export default class PlotKit {
         return [contentFrame, labelsFrame];
     }
 
-    // public prepareContentFrame(contentFrame: FrameRect, chartOptions: MultiChartOptions, series: MultiSerieData[]): void {
-    //     const MIN_VAL = 0;
-    //     const maxValueFromSeries = Math.max(...series.map(serie => Math.max(...serie.values)));
-    //     const { tickCount, tickHeight } = getTickInfo(this.MOST_TICKS, MIN_VAL, maxValueFromSeries);
-    //     const yAxisTextMaxWidth = this.measureTickTextMaxWidth(tickCount, tickHeight, MIN_VAL);
-
-    //     const tickAndLabelsFrame: FrameRect = {
-    //         x: contentFrame.x + yAxisTextMaxWidth,
-    //         y: contentFrame.y,
-    //         w: contentFrame.w - yAxisTextMaxWidth,
-    //         h: contentFrame.h
-    //     };
-    // }
-
-    // private getLabelsFrame(frame: FrameRect): FrameRect {
-    //     const { x, y, w, h } = frame;
-    //     const hSpace = h * this.LABELS_AREA_MULTIPIER;
-    //     return this.getFrame(x, y + h - hSpace, w, hSpace, 'labels');
-    // }
-
-    // private getLabelsFrameNew(frame: FrameRect, widthSpace: number): FrameRect {
-    //     const { x, y, w, h } = frame;
-    //     const hSpace = h * this.LABELS_AREA_MULTIPIER;
-    //     return this.getFrame(x, y + h - hSpace, w, hSpace, 'labels');
-    // }
-
     private strokeFrame(frame: FrameRect, color: string, width?: number): void {
         this.ctx.strokeStyle = color;
         this.ctx.lineWidth = width ?? 1;
@@ -225,7 +223,17 @@ export default class PlotKit {
         return maxMeasurement;
     }
 
-    public drawGridHorizontalLinesNew(frame: FrameRect, tickInfo: TickInfo, min: number, font: number): FrameRect {
+    /**
+     * Gets two frames from plot frame
+     * - Content frame (`content`),
+     * - Labels frame (`labels`),
+     * @param frame - frame dedicated to OY values and plot content (without labels frame)
+     * @param tickInfo - previously calculated TickInfo
+     * @param min - number from which ticking should begin
+     * @param font - font of OY values
+     * @returns frame of only plotting content to be filled in future
+    */
+    public drawGridHorizontalLines(frame: FrameRect, tickInfo: TickInfo, min: number, font: number): FrameRect {
         const { ctx } = this;
         const { tickCount, tickHeight } = tickInfo;
         const singleH = frame.h / (tickCount + 1);
@@ -249,37 +257,6 @@ export default class PlotKit {
             y: frame.y,
             w: frame.w - maxWidth,
             h: frame.h
-        };
-    }
-
-    public drawGridHorizontalLines(frame: FrameRect, min = 0, max = 0): Required<TickInfo> {
-        const { ctx } = this;
-        const { tickCount, tickHeight } = getTickInfo(this.MOST_TICKS, min, max);
-        const singleH = frame.h / (tickCount + 1);
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = this.HORIZONTAL_LINE_COLOR;
-        const maxWidth = this.measureTickTextMaxWidth(tickCount, tickHeight, min);
-        for (let i = 1; i <= tickCount + 1; i++) {
-            const y = frame.y + singleH * i;
-            const val = String(parseFloatWithoutPadding(min + (tickCount + 1 - i) * tickHeight, 4));
-            const { width } = ctx.measureText(val);
-            ctx.fillText(val, frame.x + (maxWidth - width), y);
-            ctx.beginPath();
-            ctx.moveTo(frame.x + maxWidth, y);
-            ctx.lineTo(frame.x + frame.w, y);
-            ctx.stroke();
-            ctx.closePath();
-        }
-        const tickFrame: FrameRect = {
-            x: frame.x + maxWidth,
-            y: frame.y,
-            w: frame.w - maxWidth,
-            h: frame.h
-        };
-        return {
-            tickCount,
-            tickHeight,
-            tickFrame
         };
     }
 

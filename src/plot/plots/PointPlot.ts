@@ -1,4 +1,5 @@
 import { MultiSeriePointData, Point, SerieOptionsPoint } from "../../model/types";
+import { getTickInfo } from "../utils";
 import Plot from "./../Plot";
 import { DataForPlot, DataForSerieDrawing, FrameRect, MinMax, ValueToPixelMapperFunc, ValueToPixelMapperOptions } from "./../types";
 
@@ -11,12 +12,15 @@ export default class PointPlot extends Plot {
         const chartOptions = data.chartOptions;
         const frames = this.plotKit.prepareChartForDrawing(chartOptions, series);
         let plotFrame = frames.find(frame => frame.id === 'content');
-        const labelFrame = frames.find(frame => frame.id === 'labels');
+        const labelFrame = this.plotKit.getBasicLabelsFrame(plotFrame);
+        plotFrame = this.plotKit.cutFrames(plotFrame, labelFrame);
 
         const xMinMaxForSeries = this.getMinMaxForSeries(series, 'x');
         const yMinMaxForSeries = this.getMinMaxForSeries(series, 'y');
 
-        const { tickCount, tickFrame } = this.plotKit.drawGridHorizontalLines(plotFrame, yMinMaxForSeries.min, yMinMaxForSeries.max);
+        const tickInfo = getTickInfo(10, yMinMaxForSeries.min, yMinMaxForSeries.max);
+        const tickCount = tickInfo.tickCount;
+        const tickFrame = this.plotKit.drawGridHorizontalLines(plotFrame, tickInfo, yMinMaxForSeries.min, 18);
         plotFrame = tickFrame;
         const spaceBetweenTicksPixelHeight = plotFrame.h / (tickCount + 1);
 
